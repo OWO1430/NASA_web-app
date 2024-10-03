@@ -5,7 +5,7 @@ import { TextureLoader } from 'three';
 import { useRef, useEffect } from 'react';
 
 function Background() {
-  const texture = useLoader(TextureLoader, "/textures/8k_stars_milky_way.jpg");
+  const texture = useLoader(TextureLoader, "/texture/8k_stars_milky_way.jpg");
   const { scene } = useThree();
 
   useEffect(() => {
@@ -83,7 +83,7 @@ export default function SolarSystemCanvas() {
                 {/* sun */}
                 <mesh position={[0, 0, 0]}>
                     <sphereGeometry args={[2, 32, 32]} />
-                    <meshBasicMaterial map={useLoader(TextureLoader, "/textures/8k_sun.jpg")} />
+                    <meshBasicMaterial map={useLoader(TextureLoader, "/texture/8k_sun.jpg")} />
                 </mesh>
 
 
@@ -91,7 +91,7 @@ export default function SolarSystemCanvas() {
                 <Planet
                     distance={8}
                     size={0.5}
-                    textureUrl="/textures/8k_earth_daymap.jpg"
+                    textureUrl="/texture/8k_earth_daymap.jpg"
                     speed={1}
                 />
                 <Orbit distance={8} />

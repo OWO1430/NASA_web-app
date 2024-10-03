@@ -1,12 +1,18 @@
-import Image from "next/image";
-import { Inter } from "next/font/google";
+'use client';
 
-const inter = Inter({ subsets: ['latin'] });
+// Import dynamic from Next.js
+import dynamic from 'next/dynamic';
 
-export default function Home() {
-    return (
+// Dynamically import P5Sketch with SSR disabled
+const P5Sketch = dynamic(() => import('../../components/P5Sketch'), { ssr: false });
+
+const Page = () => {
+  return (
     <div>
-        <h1>Hello World</h1>
+      <h1>Hello Page</h1>
+      <P5Sketch />
     </div>
-    );
-}
+  );
+};
+
+export default Page;
