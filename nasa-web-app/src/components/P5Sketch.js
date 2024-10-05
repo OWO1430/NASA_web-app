@@ -9,8 +9,6 @@ const sunRS = 0.001;
 
 // Time Speed
 const timeSpeed = 0.01;
-      // Time Speed
-      let timeSpeed = 0.01;
       // Camera Moving
       let camPosition;
       let camRotation;
