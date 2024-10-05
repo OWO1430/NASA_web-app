@@ -5,6 +5,16 @@ import p5 from 'p5';
 const sunRadius = 696340 * 10 ** -5;
 const sunRS = 0.001;
 const timeSpeed = 0.01;
+// Camera Moving
+let camPosition;
+let camRotation;
+let isMousePressed = false;
+let lastMouseX, lastMouseY;
+let moveSpeed = 2;
+let sensitivity = 0.002;
+// let myModel;
+
+let bgTex, sunTex, earthTex;
 
 class Planet {
   constructor(
@@ -139,6 +149,8 @@ class Planet {
     this.p.rotateY(this.rot);
     this.p.texture(this.tex);
     this.p.sphere(this.size, 64, 64);
+    //   this
+
     this.p.pop();
   }
 }
@@ -218,6 +230,81 @@ const P5Sketch = () => {
               )
             );
           }
+        };
+        let triangleButton;
+        let showWindow = false; // 控制小視窗的顯示
+        let buttonWindow;
+        let colorDiv; // 用來顯示顏色名稱的div
+
+        // 顯示/隱藏按鈕小視窗
+        const toggleButtonWindow = () => {
+          showWindow = !showWindow; // 切換視窗顯示狀態
+          if (showWindow) {
+            buttonWindow.style('display', 'flex'); // 顯示小視窗
+          } else {
+            buttonWindow.style('display', 'none'); // 隱藏小視窗
+          }
+        };
+
+        // 顯示按鈕對應的顏色文字在div中
+        const showColorDiv = (colorName) => {
+          colorDiv.html(colorName); // 更新 div 內容為顏色名稱
+          colorDiv.style('display', 'block'); // 顯示 div
+        };
+
+        p.setup = () => {
+          // 星球按鈕
+          // 創建三角形按鈕
+          triangleButton = p.createDiv().style('width', '0')
+            .style('height', '0')
+            .style('border-left', '20px solid transparent')
+            .style('border-right', '20px solid transparent')
+            .style('border-top', '40px solid blue')
+            .style('position', 'absolute')
+            .style('bottom', '100px') // 三角形位於畫布底部
+            .style('left', 'calc(50% - 20px)') // 水平居中，讓三角形保持在畫布中央
+            .style('cursor', 'pointer');
+
+          // 當點擊三角形時，顯示/隱藏按鈕小視窗
+          triangleButton.mousePressed(toggleButtonWindow);
+
+          // 創建按鈕小視窗，但初始設置為隱藏
+          buttonWindow = p.createDiv().style('display', 'none')
+            .style('border', '1px solid green')
+            .style('background-color', 'lightgray')
+            .style('position', 'absolute')
+            .style('bottom', '0px')
+            .style('left', '0')
+            .style('width', '100%')
+            .style('height', '100px')
+            .style('display', 'flex')
+            .style('justify-content', 'space-around')
+            .style('align-items', 'center');
+
+          // 創建多個按鈕，按下按鈕會顯示對應顏色的文字
+          p.createButton('太陽').parent(buttonWindow).mousePressed(() => showColorDiv('太陽'));
+          p.createButton('水星').parent(buttonWindow).mousePressed(() => showColorDiv('水星'));
+          p.createButton('金星').parent(buttonWindow).mousePressed(() => showColorDiv('金星'));
+          p.createButton('地球').parent(buttonWindow).mousePressed(() => showColorDiv('地球'));
+          p.createButton('火星').parent(buttonWindow).mousePressed(() => showColorDiv('火星'));
+
+          // 創建一個用來顯示顏色名稱的 div，初始為隱藏
+          colorDiv = p.createDiv('').style('display', 'none')
+            .style('border', '1px solid black')
+            .style('padding', '10px')
+            .style('background-color', 'white')
+            .style('position', 'absolute')
+            .style('top', '20px')
+            .style('left', 'calc(50% - 50px)')
+            .style('width', '100px')
+            .style('text-align', 'center');
+
+          p.createCanvas(p.windowWidth, p.windowHeight, p.WEBGL);
+          p.noStroke();
+          p.textureWrap(p.REPEAT);
+          camPosition = p.createVector(0, -500, 500);
+          camRotation = p.createVector(0.84, 0, 0);
+          loadInfo();
         };
 
         p.setup = () => {
