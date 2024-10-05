@@ -1,9 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
 import p5 from 'p5';
+// import 'p5/lib/addons/p5.dom';
+import { planets } from '@/celestial_bodies';
 
-// param
+
 const sunRadius = 696340 * 10 ** -5;
 const sunRS = 0.001;
+
+// Time Speed
 const timeSpeed = 0.01;
 // Camera Moving
 let camPosition;
@@ -159,368 +163,349 @@ const P5Sketch = () => {
   const sketchRef = useRef(null);
 
   const [minSize, setMinSize] = useState(7000);
-  const [fPlanets, setFPlanets] = useState([]);
 
-  const handleMinSizeChange = (ele) => {
-    if (ele.key == 'Enter') {
-      console.log("Min size changed to", Number(ele.target.value));
-      setMinSize(Number(ele.target.value));
+  const handleMinSizeChange = (e) => {
+    if (e.key == 'Enter') {
+      console.log("Min size changed to", Number(e.target.value));
+      setMinSize(Number(e.target.value));
     }
   };
 
   useEffect(() => {
-    const fetchData = async () => {
-      const res = await fetch(`api/celestial-data?minSize=${minSize}`, {
-        method: "GET",
-      });
+    const f_planets = planets.filter(e =>
+      e.size > minSize &&
+      1 // we could put more filter here!
+    );
 
-      const result = await res.json();
-      setFPlanets(result);
-    };
+    console.log(f_planets);
 
-    fetchData();
-    return () => { };
-  }, [minSize]);
+    // Initialize p5 instance
+    const sketch = (p) => {
+      let planets = [];
+      let all_planets = [];
+      let planet_texes = [];
 
-  useEffect(() => {
-    if (fPlanets) {
-      // Initialize p5 instance
-      const sketch = (p) => {
-        let planets = [];
-        let all_planets = [];
-        let planet_texes = [];
+      let sunR = 0;
+      let time = 0;
 
-        let sunR = 0;
-        let time = 0;
+      // Camera Moving
+      let camPosition;
+      let camRotation;
+      let isMousePressed = false;
+      let lastMouseX, lastMouseY;
+      let moveSpeed = 2;
+      let sensitivity = 0.002;
 
-        // Camera Moving
-        let camPosition;
-        let camRotation;
-        let isMousePressed = false;
-        let lastMouseX, lastMouseY;
-        let moveSpeed = 2;
-        let sensitivity = 0.002;
+      let bgTex, sunTex;
 
-        let bgTex, sunTex;
+      p.preload = () => {
+        bgTex = p.loadImage('/texture/8k_stars_milky_way.jpg');
+        sunTex = p.loadImage('/texture/8k_sun.jpg');
+        for (var i = 0; i < f_planets.length; i++) {
+          planet_texes.push(p.loadImage(f_planets[i].texurl));
+        }
+      };
 
-        p.preload = () => {
-          bgTex = p.loadImage('/texture/8k_stars_milky_way.jpg');
-          sunTex = p.loadImage('/texture/8k_sun.jpg');
-          for (var i = 0; i < fPlanets.length; i++) {
-            planet_texes.push(p.loadImage(fPlanets[i].tex));
-          }
-        };
+      const loadInfo = () => {
+        for (var i = 0; i < f_planets.length; i++) {
+          all_planets.push(
+            new Planet(
+              p,
+              f_planets[i].name,
+              f_planets[i].a,
+              f_planets[i].e,
+              f_planets[i].I,
+              f_planets[i].L,
+              f_planets[i].longPeri,
+              f_planets[i].longNode,
+              f_planets[i].size,
+              planet_texes[i],
+              f_planets[i].axialTilt,
+              f_planets[i].rotationPeriod,
+            )
+          );
+        }
+      };
 
-        const loadInfo = () => {
-          for (var i = 0; i < fPlanets.length; i++) {
-            all_planets.push(
-              new Planet(
-                p,
-                fPlanets[i].full_name,
-                fPlanets[i].a,
-                fPlanets[i].e,
-                fPlanets[i].I,
-                fPlanets[i].L,
-                fPlanets[i].longPeri,
-                fPlanets[i].longNode,
-                fPlanets[i].size,
-                planet_texes[i],
-                fPlanets[i].axialTilt,
-                fPlanets[i].rotPeriod,
-              )
-            );
-          }
-        };
-        let triangleButton;
-        let showWindow = false; // 控制小視窗的顯示
-        let buttonWindow;
-        let colorDiv; // 用來顯示顏色名稱的div
+      let triangleButton;
+      let showWindow = false; // 控制小視窗的顯示
+      let buttonWindow;
+      let colorDiv; // 用來顯示顏色名稱的div
 
-        // 顯示/隱藏按鈕小視窗
-        const toggleButtonWindow = () => {
-          showWindow = !showWindow; // 切換視窗顯示狀態
-          if (showWindow) {
-            buttonWindow.style('display', 'flex'); // 顯示小視窗
-          } else {
-            buttonWindow.style('display', 'none'); // 隱藏小視窗
-          }
-        };
+      // 顯示/隱藏按鈕小視窗
+      const toggleButtonWindow = () => {
+        showWindow = !showWindow; // 切換視窗顯示狀態
+        if (showWindow) {
+          buttonWindow.style('display', 'flex'); // 顯示小視窗
+        } else {
+          buttonWindow.style('display', 'none'); // 隱藏小視窗
+        }
+      };
 
-        // 顯示按鈕對應的顏色文字在div中
-        const showColorDiv = (colorName) => {
-          colorDiv.html(colorName); // 更新 div 內容為顏色名稱
-          colorDiv.style('display', 'block'); // 顯示 div
-        };
+      // 顯示按鈕對應的顏色文字在div中
+      const showColorDiv = (colorName) => {
+        colorDiv.html(colorName); // 更新 div 內容為顏色名稱
+        colorDiv.style('display', 'block'); // 顯示 div
+      };
 
-        p.setup = () => {
-          // 星球按鈕
-          // 創建三角形按鈕
-          triangleButton = p.createDiv().style('width', '0')
-            .style('height', '0')
-            .style('border-left', '20px solid transparent')
-            .style('border-right', '20px solid transparent')
-            .style('border-top', '40px solid blue')
-            .style('position', 'absolute')
-            .style('bottom', '100px') // 三角形位於畫布底部
-            .style('left', 'calc(50% - 20px)') // 水平居中，讓三角形保持在畫布中央
-            .style('cursor', 'pointer');
+      p.setup = () => {
+        // 星球按鈕
+        // 創建三角形按鈕
+        triangleButton = p.createDiv().style('width', '0')
+          .style('height', '0')
+          .style('border-left', '20px solid transparent')
+          .style('border-right', '20px solid transparent')
+          .style('border-top', '40px solid blue')
+          .style('position', 'absolute')
+          .style('bottom', '100px') // 三角形位於畫布底部
+          .style('left', 'calc(50% - 20px)') // 水平居中，讓三角形保持在畫布中央
+          .style('cursor', 'pointer');
 
-          // 當點擊三角形時，顯示/隱藏按鈕小視窗
-          triangleButton.mousePressed(toggleButtonWindow);
+        // 當點擊三角形時，顯示/隱藏按鈕小視窗
+        triangleButton.mousePressed(toggleButtonWindow);
 
-          // 創建按鈕小視窗，但初始設置為隱藏
-          buttonWindow = p.createDiv().style('display', 'none')
-            .style('border', '1px solid green')
-            .style('background-color', 'lightgray')
-            .style('position', 'absolute')
-            .style('bottom', '0px')
-            .style('left', '0')
-            .style('width', '100%')
-            .style('height', '100px')
-            .style('display', 'flex')
-            .style('justify-content', 'space-around')
-            .style('align-items', 'center');
+        // 創建按鈕小視窗，但初始設置為隱藏
+        buttonWindow = p.createDiv().style('display', 'none')
+          .style('border', '1px solid green')
+          .style('background-color', 'lightgray')
+          .style('position', 'absolute')
+          .style('bottom', '0px')
+          .style('left', '0')
+          .style('width', '100%')
+          .style('height', '100px')
+          .style('display', 'flex')
+          .style('justify-content', 'space-around')
+          .style('align-items', 'center');
 
-          // 創建多個按鈕，按下按鈕會顯示對應顏色的文字
-          p.createButton('太陽').parent(buttonWindow).mousePressed(() => showColorDiv('太陽'));
-          p.createButton('水星').parent(buttonWindow).mousePressed(() => showColorDiv('水星'));
-          p.createButton('金星').parent(buttonWindow).mousePressed(() => showColorDiv('金星'));
-          p.createButton('地球').parent(buttonWindow).mousePressed(() => showColorDiv('地球'));
-          p.createButton('火星').parent(buttonWindow).mousePressed(() => showColorDiv('火星'));
+        // 創建多個按鈕，按下按鈕會顯示對應顏色的文字
+        p.createButton('太陽').parent(buttonWindow).mousePressed(() => showColorDiv('太陽'));
+        p.createButton('水星').parent(buttonWindow).mousePressed(() => showColorDiv('水星'));
+        p.createButton('金星').parent(buttonWindow).mousePressed(() => showColorDiv('金星'));
+        p.createButton('地球').parent(buttonWindow).mousePressed(() => showColorDiv('地球'));
+        p.createButton('火星').parent(buttonWindow).mousePressed(() => showColorDiv('火星'));
 
-          // 創建一個用來顯示顏色名稱的 div，初始為隱藏
-          colorDiv = p.createDiv('').style('display', 'none')
-            .style('border', '1px solid black')
-            .style('padding', '10px')
-            .style('background-color', 'white')
-            .style('position', 'absolute')
-            .style('top', '20px')
-            .style('left', 'calc(50% - 50px)')
-            .style('width', '100px')
-            .style('text-align', 'center');
+        // 創建一個用來顯示顏色名稱的 div，初始為隱藏
+        colorDiv = p.createDiv('').style('display', 'none')
+          .style('border', '1px solid black')
+          .style('padding', '10px')
+          .style('background-color', 'white')
+          .style('position', 'absolute')
+          .style('top', '20px')
+          .style('left', 'calc(50% - 50px)')
+          .style('width', '100px')
+          .style('text-align', 'center');
 
-          p.createCanvas(p.windowWidth, p.windowHeight, p.WEBGL);
-          p.noStroke();
-          p.textureWrap(p.REPEAT);
-          camPosition = p.createVector(0, -500, 500);
-          camRotation = p.createVector(0.84, 0, 0);
-          loadInfo();
-        };
+        p.createCanvas(p.windowWidth, p.windowHeight, p.WEBGL);
+        p.noStroke();
+        p.textureWrap(p.REPEAT);
+        camPosition = p.createVector(0, -500, 500);
+        camRotation = p.createVector(0.84, 0, 0);
+        loadInfo();
+      };
 
-        p.setup = () => {
-          p.createCanvas(p.windowWidth, p.windowHeight, p.WEBGL);
-          p.noStroke();
-          p.textureWrap(p.REPEAT);
-          camPosition = p.createVector(0, -500, 500);
-          camRotation = p.createVector(0.84, 0, 0);
-          loadInfo();
-        };
-
-        p.checkCollision = function (newPosition) {
-          for (let planet of planets) {
-            let distance = p5.Vector.dist(newPosition, planet.position);
-            let minDistance = planet.radius - 80;
-
-            if (distance < minDistance) {
-              // Collision occurs
-              return true;
-            }
-          }
-          let distance = p5.Vector.dist(newPosition, p.createVector(0, 0, 0));
-          let minDistance = sunRadius - 80;
+      p.checkCollision = function (newPosition) {
+        for (let planet of planets) {
+          let distance = p5.Vector.dist(newPosition, planet.position);
+          let minDistance = planet.radius - 80;
 
           if (distance < minDistance) {
+            // Collision occurs
             return true;
           }
-          return false;
-        };
+        }
+        let distance = p5.Vector.dist(newPosition, p.createVector(0, 0, 0));
+        let minDistance = sunRadius - 80;
 
-        p.handleKeyboardInput = function () {
-          // Compute forward, right, up vectors
-          let forward = p.createVector(0, 0, -1);
-          let right = p.createVector(1, 0, 0);
-          let up = p.createVector(0, 1, 0);
-
-          // Adjust direction vectors based on camera rotation
-          let rotationMatrix = new p5.Matrix();
-          rotationMatrix.rotateY(camRotation.y);
-          rotationMatrix.rotateX(camRotation.x);
-
-          forward = p.applyMatrixToVector(rotationMatrix, forward);
-          right = p.applyMatrixToVector(rotationMatrix, right);
-
-          // Move intent vector
-          let moveIntent = p.createVector(0, 0, 0);
-
-          if (p.keyIsDown(87)) {
-            // W
-            moveIntent.add(forward);
-          }
-          if (p.keyIsDown(83)) {
-            // S
-            moveIntent.sub(forward);
-          }
-          if (p.keyIsDown(65)) {
-            // A
-            moveIntent.sub(right);
-          }
-          if (p.keyIsDown(68)) {
-            // D
-            moveIntent.add(right);
-          }
-          if (p.keyIsDown(81)) {
-            // Q
-            moveIntent.sub(up);
-          }
-          if (p.keyIsDown(69)) {
-            // E
-            moveIntent.add(up);
-          }
-
-          if (moveIntent.mag() > 0) {
-            moveIntent.normalize().mult(moveSpeed);
-            let newCamPosition = p5.Vector.add(camPosition, moveIntent);
-
-            if (!p.checkCollision(newCamPosition)) {
-              camPosition = newCamPosition;
-            }
-          }
-          if (p.keyIsDown(82)) {
-            // R for reset
-            camPosition = p.createVector(0, -600, 600);
-            camRotation = p.createVector(0.84, 0, 0);
-          }
-        };
-
-        p.handleMouseInput = function () {
-          if (isMousePressed) {
-            let deltaX = p.mouseX - lastMouseX;
-            let deltaY = p.mouseY - lastMouseY;
-
-            camRotation.y -= deltaX * sensitivity;
-            camRotation.x += deltaY * sensitivity;
-
-            camRotation.x = p.constrain(
-              camRotation.x,
-              -p.PI / 2,
-              p.PI / 2
-            );
-
-            lastMouseX = p.mouseX;
-            lastMouseY = p.mouseY;
-          }
-        };
-
-        p.updateCamera = function () {
-          // Direction vector
-          let camDir = p.createVector(0, 0, -1);
-          let rotationMatrix = new p5.Matrix();
-          rotationMatrix.rotateY(camRotation.y);
-          rotationMatrix.rotateX(camRotation.x);
-
-          camDir = p.applyMatrixToVector(rotationMatrix, camDir);
-
-          let camTarget = p5.Vector.add(camPosition, camDir);
-
-          p.camera(
-            camPosition.x,
-            camPosition.y,
-            camPosition.z,
-            camTarget.x,
-            camTarget.y,
-            camTarget.z,
-            0,
-            1,
-            0
-          );
-        };
-
-        p.mousePressed = function () {
-          if (p.mouseButton === p.LEFT) {
-            isMousePressed = true;
-            lastMouseX = p.mouseX;
-            lastMouseY = p.mouseY;
-          }
-        };
-
-        p.mouseReleased = function () {
-          if (p.mouseButton === p.LEFT) {
-            isMousePressed = false;
-          }
-        };
-
-        p.applyMatrixToVector = function (matrix, vector) {
-          let x = vector.x;
-          let y = vector.y;
-          let z = vector.z;
-
-          let result = p.createVector(
-            matrix.mat4[0] * x +
-            matrix.mat4[4] * y +
-            matrix.mat4[8] * z,
-            matrix.mat4[1] * x +
-            matrix.mat4[5] * y +
-            matrix.mat4[9] * z,
-            matrix.mat4[2] * x +
-            matrix.mat4[6] * y +
-            matrix.mat4[10] * z
-          );
-
-          return result;
-        };
-
-        p.draw = () => {
-          p.handleKeyboardInput();
-          p.handleMouseInput();
-          p.updateCamera();
-
-          p.background(0);
-          p.push();
-          p.resetMatrix();
-          p.noStroke();
-          let gl = p._renderer.GL;
-          gl.disable(gl.DEPTH_TEST);
-          p.scale(-1, 1, 1);
-          p.texture(bgTex);
-          p.sphere(5000, 64, 64);
-          gl.enable(gl.DEPTH_TEST);
-          p.pop();
-
-          // Update and display the sun
-          sunR += sunRS;
-          p.push();
-          p.translate(0, 0, 0);
-          p.rotateY(sunR);
-          p.texture(sunTex);
-          p.sphere(sunRadius, 64, 64);
-          p.pop();
-
-          // Update and display Earth
-          for (var i = 0; i < all_planets.length; i++) {
-            all_planets[i].drawOrbit();
-            all_planets[i].evolution(time);
-            all_planets[i].show();
-          }
-
-          time += timeSpeed;
-
-          // Hide mouse when dragging
-          if (isMousePressed) {
-          } else {
-            p.cursor();
-          }
-        };
+        if (distance < minDistance) {
+          return true;
+        }
+        return false;
       };
 
-      const p5Instance = new p5(sketch, sketchRef.current);
-      // Clean up the p5 instance on component unmount
-      return () => {
-        p5Instance.remove();
-      };
-    }
+      p.handleKeyboardInput = function () {
+        // Compute forward, right, up vectors
+        let forward = p.createVector(0, 0, -1);
+        let right = p.createVector(1, 0, 0);
+        let up = p.createVector(0, 1, 0);
 
-    return () => { };
-  }, [fPlanets]);
+        // Adjust direction vectors based on camera rotation
+        let rotationMatrix = new p5.Matrix();
+        rotationMatrix.rotateY(camRotation.y);
+        rotationMatrix.rotateX(camRotation.x);
+
+        forward = p.applyMatrixToVector(rotationMatrix, forward);
+        right = p.applyMatrixToVector(rotationMatrix, right);
+
+        // Move intent vector
+        let moveIntent = p.createVector(0, 0, 0);
+
+        if (p.keyIsDown(87)) {
+          // W
+          moveIntent.add(forward);
+        }
+        if (p.keyIsDown(83)) {
+          // S
+          moveIntent.sub(forward);
+        }
+        if (p.keyIsDown(65)) {
+          // A
+          moveIntent.sub(right);
+        }
+        if (p.keyIsDown(68)) {
+          // D
+          moveIntent.add(right);
+        }
+        if (p.keyIsDown(81)) {
+          // Q
+          moveIntent.sub(up);
+        }
+        if (p.keyIsDown(69)) {
+          // E
+          moveIntent.add(up);
+        }
+
+        if (moveIntent.mag() > 0) {
+          moveIntent.normalize().mult(moveSpeed);
+          let newCamPosition = p5.Vector.add(camPosition, moveIntent);
+
+          if (!p.checkCollision(newCamPosition)) {
+            camPosition = newCamPosition;
+          }
+        }
+        if (p.keyIsDown(82)) {
+          // R for reset
+          camPosition = p.createVector(0, -600, 600);
+          camRotation = p.createVector(0.84, 0, 0);
+        }
+      };
+
+      p.handleMouseInput = function () {
+        if (isMousePressed) {
+          let deltaX = p.mouseX - lastMouseX;
+          let deltaY = p.mouseY - lastMouseY;
+
+          camRotation.y -= deltaX * sensitivity;
+          camRotation.x += deltaY * sensitivity;
+
+          camRotation.x = p.constrain(
+            camRotation.x,
+            -p.PI / 2,
+            p.PI / 2
+          );
+
+          lastMouseX = p.mouseX;
+          lastMouseY = p.mouseY;
+        }
+      };
+
+      p.updateCamera = function () {
+        // Direction vector
+        let camDir = p.createVector(0, 0, -1);
+        let rotationMatrix = new p5.Matrix();
+        rotationMatrix.rotateY(camRotation.y);
+        rotationMatrix.rotateX(camRotation.x);
+
+        camDir = p.applyMatrixToVector(rotationMatrix, camDir);
+
+        let camTarget = p5.Vector.add(camPosition, camDir);
+
+        p.camera(
+          camPosition.x,
+          camPosition.y,
+          camPosition.z,
+          camTarget.x,
+          camTarget.y,
+          camTarget.z,
+          0,
+          1,
+          0
+        );
+      };
+
+      p.mousePressed = function () {
+        if (p.mouseButton === p.LEFT) {
+          isMousePressed = true;
+          lastMouseX = p.mouseX;
+          lastMouseY = p.mouseY;
+        }
+      };
+
+      p.mouseReleased = function () {
+        if (p.mouseButton === p.LEFT) {
+          isMousePressed = false;
+        }
+      };
+
+      p.applyMatrixToVector = function (matrix, vector) {
+        let x = vector.x;
+        let y = vector.y;
+        let z = vector.z;
+
+        let result = p.createVector(
+          matrix.mat4[0] * x +
+          matrix.mat4[4] * y +
+          matrix.mat4[8] * z,
+          matrix.mat4[1] * x +
+          matrix.mat4[5] * y +
+          matrix.mat4[9] * z,
+          matrix.mat4[2] * x +
+          matrix.mat4[6] * y +
+          matrix.mat4[10] * z
+        );
+
+        return result;
+      };
+
+      p.draw = () => {
+        p.handleKeyboardInput();
+        p.handleMouseInput();
+        p.updateCamera();
+
+        p.background(0);
+        p.push();
+        p.resetMatrix();
+        p.noStroke();
+        let gl = p._renderer.GL;
+        gl.disable(gl.DEPTH_TEST);
+        p.scale(-1, 1, 1);
+        p.texture(bgTex);
+        p.sphere(5000, 64, 64);
+        gl.enable(gl.DEPTH_TEST);
+        p.pop();
+
+        // Update and display the sun
+        sunR += sunRS;
+        p.push();
+        p.translate(0, 0, 0);
+        p.rotateY(sunR);
+        p.texture(sunTex);
+        p.sphere(sunRadius, 64, 64);
+        p.pop();
+
+        // Update and display Earth
+        for (var i = 0; i < all_planets.length; i++) {
+          all_planets[i].drawOrbit();
+          all_planets[i].evolution(time);
+          all_planets[i].show();
+        }
+
+        time += timeSpeed;
+
+        // Hide mouse when dragging
+        if (isMousePressed) {
+        } else {
+          p.cursor();
+        }
+      };
+    };
+
+    const p5Instance = new p5(sketch, sketchRef.current);
+
+    // Clean up the p5 instance on component unmount
+    return () => {
+      p5Instance.remove();
+    };
+  }, [minSize]);
 
   return <div>
     <div ref={sketchRef}>
