@@ -1,22 +1,180 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import p5 from 'p5';
+import { planets } from '@/celestial_bodies';
+
+
+const sunRadius = 696340 * 10 ** -5;
+const sunRS = 0.001;
+
+// Time Speed
+const timeSpeed = 0.01;
+
+class Planet {
+  constructor(
+    p,
+    name,
+    a,
+    e,
+    I,
+    L,
+    longPeri,
+    longNode,
+    size,
+    tex,
+    axialTilt,
+    rotationPeriod
+  ) {
+    this.p = p;
+    this.name = name;
+    this.a = a * 149597870.7 * 1e-5; // semi-major axis in p5 units
+    this.e = e; // eccentricity
+    this.I = this.p.radians(I); // inclination in radians
+    this.L = this.p.radians(L); // mean longitude in radians
+    this.longPeri = this.p.radians(longPeri); // longitude of perihelion in radians
+    this.longNode = this.p.radians(longNode); // longitude of ascending node in radians
+    this.size = size * 1e-3; // size of the planet in p5 units
+    this.tex = tex; // texture for the planet
+    this.axialTilt = this.p.radians(axialTilt); // axial tilt
+    this.rotationPeriod = rotationPeriod;
+    this.x = 0;
+    this.y = 0;
+    this.z = 0;
+    this.rot = 0;
+  }
+
+  // planet evolution
+  evolution(time) {
+    // Calculate mean anomaly M = L - longPeri
+    let M =
+      this.L + (time * this.p.TWO_PI) / 365.25 - this.longPeri;
+
+    // Solve Kepler's equation for eccentric anomaly E
+    let E = M;
+    for (let i = 0; i < 5; i++) {
+      E = M + this.e * this.p.sin(E);
+    }
+
+    // Calculate true anomaly
+    let trueAnomaly =
+      2 *
+      this.p.atan(
+        this.p.sqrt((1 + this.e) / (1 - this.e)) *
+        this.p.tan(E / 2)
+      );
+
+    // Calculate distance r = a * (1 - e^2) / (1 + e * cos(trueAnomaly))
+    let r =
+      (this.a * (1 - this.e * this.e)) /
+      (1 + this.e * this.p.cos(trueAnomaly));
+
+    // Convert polar coordinates (r, trueAnomaly) to 3D Cartesian coordinates (x, y, z)
+    this.x =
+      r *
+      (this.p.cos(this.longNode) *
+        this.p.cos(trueAnomaly + this.longPeri) -
+        this.p.sin(this.longNode) *
+        this.p.sin(trueAnomaly + this.longPeri) *
+        this.p.cos(this.I));
+    this.z =
+      r *
+      (this.p.sin(this.longNode) *
+        this.p.cos(trueAnomaly + this.longPeri) +
+        this.p.cos(this.longNode) *
+        this.p.sin(trueAnomaly + this.longPeri) *
+        this.p.cos(this.I));
+    this.y =
+      r *
+      this.p.sin(trueAnomaly + this.longPeri) *
+      this.p.sin(this.I);
+
+    // Calculate rotation for display
+    let angularVelocity =
+      this.p.TWO_PI / this.rotationPeriod; // Angular velocity for daily rotation
+    this.rot += angularVelocity * (timeSpeed / 365.25);
+  }
+
+  // planet orbit
+  drawOrbit() {
+    this.p.noFill();
+    this.p.stroke(255, 100);
+    this.p.strokeWeight(1);
+
+    this.p.beginShape();
+    for (
+      let theta = 0;
+      theta < this.p.TWO_PI;
+      theta += 0.01
+    ) {
+      // Calculate the radial distance r for a given theta in polar coordinates
+      let r =
+        (this.a * (1 - this.e * this.e)) /
+        (1 + this.e * this.p.cos(theta));
+
+      // Convert polar coordinates to 3D Cartesian coordinates
+      let x =
+        r *
+        (this.p.cos(this.longNode) *
+          this.p.cos(theta + this.longPeri) -
+          this.p.sin(this.longNode) *
+          this.p.sin(theta + this.longPeri) *
+          this.p.cos(this.I));
+      let z =
+        r *
+        (this.p.sin(this.longNode) *
+          this.p.cos(theta + this.longPeri) +
+          this.p.cos(this.longNode) *
+          this.p.sin(theta + this.longPeri) *
+          this.p.cos(this.I));
+      let y =
+        r *
+        this.p.sin(theta + this.longPeri) *
+        this.p.sin(this.I);
+
+      this.p.vertex(x, y, z);
+    }
+    this.p.endShape(this.p.CLOSE);
+  }
+
+  // show planet
+  show() {
+    this.p.push();
+    this.p.translate(this.x, this.y, this.z);
+    this.p.rotateY(this.rot);
+    this.p.texture(this.tex);
+    this.p.sphere(this.size, 64, 64);
+    this.p.pop();
+  }
+}
 
 const P5Sketch = () => {
   const sketchRef = useRef(null);
 
+  const [minSize, setMinSize] = useState(7000);
+
+  const handleMinSizeChange = (e) => {
+    if (e.key == 'Enter') {
+      console.log("Min size changed to", Number(e.target.value));
+      setMinSize(Number(e.target.value));
+    }
+  };
+
   useEffect(() => {
+    const f_planets = planets.filter(e =>
+      e.size > minSize &&
+      1 // we could put more filter here!
+    );
+
+    console.log(f_planets);
+
     // Initialize p5 instance
     const sketch = (p) => {
       let planets = [];
-      let earth;
+      let all_planets = [];
+      let planet_texes = [];
+
+      let sunR = 0;
       let time = 0;
 
-      let sunRadius = 696340 * 10 ** -5;
-      let sunR = 0;
-      let sunRS = 0.001;
-
-      // Time Speed
-      let timeSpeed = 0.01;
       // Camera Moving
       let camPosition;
       let camRotation;
@@ -25,160 +183,35 @@ const P5Sketch = () => {
       let moveSpeed = 2;
       let sensitivity = 0.002;
 
-      let bgTex, sunTex, earthTex;
-
-      class Planet {
-        constructor(
-          p,
-          name,
-          a,
-          e,
-          I,
-          L,
-          longPeri,
-          longNode,
-          size,
-          tex,
-          axialTilt,
-          rotationPeriod
-        ) {
-          this.p = p;
-          this.name = name;
-          this.a = a * 149597870.7 * 1e-5; // semi-major axis in p5 units
-          this.e = e; // eccentricity
-          this.I = this.p.radians(I); // inclination in radians
-          this.L = this.p.radians(L); // mean longitude in radians
-          this.longPeri = this.p.radians(longPeri); // longitude of perihelion in radians
-          this.longNode = this.p.radians(longNode); // longitude of ascending node in radians
-          this.size = size * 1e-3; // size of the planet in p5 units
-          this.tex = tex; // texture for the planet
-          this.axialTilt = this.p.radians(axialTilt); // axial tilt
-          this.rotationPeriod = rotationPeriod;
-          this.x = 0;
-          this.y = 0;
-          this.z = 0;
-          this.rot = 0;
-        }
-        evolution(time) {
-          // Calculate mean anomaly M = L - longPeri
-          let M =
-            this.L + (time * this.p.TWO_PI) / 365.25 - this.longPeri;
-
-          // Solve Kepler's equation for eccentric anomaly E
-          let E = M;
-          for (let i = 0; i < 5; i++) {
-            E = M + this.e * this.p.sin(E);
-          }
-
-          // Calculate true anomaly
-          let trueAnomaly =
-            2 *
-            this.p.atan(
-              this.p.sqrt((1 + this.e) / (1 - this.e)) *
-                this.p.tan(E / 2)
-            );
-
-          // Calculate distance r = a * (1 - e^2) / (1 + e * cos(trueAnomaly))
-          let r =
-            (this.a * (1 - this.e * this.e)) /
-            (1 + this.e * this.p.cos(trueAnomaly));
-
-          // Convert polar coordinates (r, trueAnomaly) to 3D Cartesian coordinates (x, y, z)
-          this.x =
-            r *
-            (this.p.cos(this.longNode) *
-              this.p.cos(trueAnomaly + this.longPeri) -
-              this.p.sin(this.longNode) *
-                this.p.sin(trueAnomaly + this.longPeri) *
-                this.p.cos(this.I));
-          this.z =
-            r *
-            (this.p.sin(this.longNode) *
-              this.p.cos(trueAnomaly + this.longPeri) +
-              this.p.cos(this.longNode) *
-                this.p.sin(trueAnomaly + this.longPeri) *
-                this.p.cos(this.I));
-          this.y =
-            r *
-            this.p.sin(trueAnomaly + this.longPeri) *
-            this.p.sin(this.I);
-
-          // Calculate rotation for display
-          let angularVelocity =
-            this.p.TWO_PI / this.rotationPeriod; // Angular velocity for daily rotation
-          this.rot += angularVelocity * (timeSpeed / 365.25);
-        }
-        drawOrbit() {
-          this.p.noFill();
-          this.p.stroke(255, 100);
-          this.p.strokeWeight(1);
-
-          this.p.beginShape();
-          for (
-            let theta = 0;
-            theta < this.p.TWO_PI;
-            theta += 0.01
-          ) {
-            // Calculate the radial distance r for a given theta in polar coordinates
-            let r =
-              (this.a * (1 - this.e * this.e)) /
-              (1 + this.e * this.p.cos(theta));
-
-            // Convert polar coordinates to 3D Cartesian coordinates
-            let x =
-              r *
-              (this.p.cos(this.longNode) *
-                this.p.cos(theta + this.longPeri) -
-                this.p.sin(this.longNode) *
-                  this.p.sin(theta + this.longPeri) *
-                  this.p.cos(this.I));
-            let z =
-              r *
-              (this.p.sin(this.longNode) *
-                this.p.cos(theta + this.longPeri) +
-                this.p.cos(this.longNode) *
-                  this.p.sin(theta + this.longPeri) *
-                  this.p.cos(this.I));
-            let y =
-              r *
-              this.p.sin(theta + this.longPeri) *
-              this.p.sin(this.I);
-
-            this.p.vertex(x, y, z);
-          }
-          this.p.endShape(this.p.CLOSE);
-        }
-        show() {
-          this.p.push();
-          this.p.translate(this.x, this.y, this.z);
-          this.p.rotateY(this.rot);
-          this.p.texture(this.tex);
-          this.p.sphere(this.size, 64, 64);
-          this.p.pop();
-        }
-      }
+      let bgTex, sunTex;
 
       p.preload = () => {
         bgTex = p.loadImage('/texture/8k_stars_milky_way.jpg');
         sunTex = p.loadImage('/texture/8k_sun.jpg');
-        earthTex = p.loadImage('/texture/8k_earth_daymap.jpg');
+        for (var i = 0; i < f_planets.length; i++) {
+          planet_texes.push(p.loadImage(f_planets[i].texurl));
+        }
       };
 
       const loadInfo = () => {
-        earth = new Planet(
-          p,
-          'Earth',
-          1.00000261,
-          0.01671123,
-          -0.00001531,
-          100.46457166,
-          102.93768193,
-          0,
-          6371,
-          earthTex,
-          23.5,
-          1
-        );
+        for (var i = 0; i < f_planets.length; i++) {
+          all_planets.push(
+            new Planet(
+              p,
+              f_planets[i].name,
+              f_planets[i].a,
+              f_planets[i].e,
+              f_planets[i].I,
+              f_planets[i].L,
+              f_planets[i].longPeri,
+              f_planets[i].longNode,
+              f_planets[i].size,
+              planet_texes[i],
+              f_planets[i].axialTilt,
+              f_planets[i].rotationPeriod,
+            )
+          );
+        }
       };
 
       p.setup = () => {
@@ -330,14 +363,14 @@ const P5Sketch = () => {
 
         let result = p.createVector(
           matrix.mat4[0] * x +
-            matrix.mat4[4] * y +
-            matrix.mat4[8] * z,
+          matrix.mat4[4] * y +
+          matrix.mat4[8] * z,
           matrix.mat4[1] * x +
-            matrix.mat4[5] * y +
-            matrix.mat4[9] * z,
+          matrix.mat4[5] * y +
+          matrix.mat4[9] * z,
           matrix.mat4[2] * x +
-            matrix.mat4[6] * y +
-            matrix.mat4[10] * z
+          matrix.mat4[6] * y +
+          matrix.mat4[10] * z
         );
 
         return result;
@@ -370,15 +403,16 @@ const P5Sketch = () => {
         p.pop();
 
         // Update and display Earth
-        earth.drawOrbit();
-        earth.evolution(time);
-        earth.show();
+        for (var i = 0; i < all_planets.length; i++) {
+          all_planets[i].drawOrbit();
+          all_planets[i].evolution(time);
+          all_planets[i].show();
+        }
 
         time += timeSpeed;
 
         // Hide mouse when dragging
         if (isMousePressed) {
-          p.cursor('none');
         } else {
           p.cursor();
         }
@@ -391,9 +425,20 @@ const P5Sketch = () => {
     return () => {
       p5Instance.remove();
     };
-  }, []);
+  }, [minSize]);
 
-  return <div ref={sketchRef}></div>;
+  return <div>
+    <div ref={sketchRef}>
+      <p>Min Size: </p>
+      <input
+        type="value"
+        id="min_size_input"
+        placeholder="0"
+        defaultValue={minSize}
+        onKeyDown={handleMinSizeChange}
+      />
+    </div>
+  </div>;
 };
 
 export default P5Sketch;

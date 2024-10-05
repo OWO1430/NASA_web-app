@@ -3,23 +3,55 @@ import { OrbitControls, Stars, Line } from '@react-three/drei';
 import * as THREE from 'three';
 import { TextureLoader } from 'three';
 import { useRef, useEffect } from 'react';
+import { planets, asteroids } from '@/celestial_bodies';
 
 function Background() {
-  const texture = useLoader(TextureLoader, "/texture/8k_stars_milky_way.jpg");
-  const { scene } = useThree();
+    const texture = useLoader(TextureLoader, "/texture/8k_stars_milky_way.jpg");
+    const { scene } = useThree();
 
-  useEffect(() => {
-    if (texture) {
-      scene.background = texture;
-    }
-  }, [texture, scene]);
+    useEffect(() => {
+        if (texture) {
+            scene.background = texture;
+        }
+    }, [texture, scene]);
 
-  return null;
+    return null;
 }
 
 
 
 function Planet({
+    distance,
+    size,
+    textureUrl,
+    speed,
+}: {
+    distance: number;
+    size: number;
+    textureUrl: string;
+    speed: number;
+}) {
+    const planetRef = useRef<THREE.Mesh>(null!);
+    const texture = useLoader(TextureLoader, textureUrl);
+
+    useFrame(({ clock }) => {
+        const t = clock.getElapsedTime() * speed;
+        if (planetRef.current) {
+            planetRef.current.position.x = distance * Math.cos(t);
+            planetRef.current.position.z = distance * Math.sin(t);
+            planetRef.current.rotation.y += 0.01;
+        }
+    });
+
+    return (
+        <mesh ref={planetRef}>
+            <sphereGeometry args={[size, 32, 32]} />
+            <meshStandardMaterial map={texture} />
+        </mesh>
+    );
+}
+
+function Asteroid({
     distance,
     size,
     textureUrl,
@@ -70,6 +102,8 @@ function SaturnRings({ distance }: { distance: number }) {
 }
 
 export default function SolarSystemCanvas() {
+    const selection = ['planets', 'asteroid']
+
     return (
         <div style={{ height: '100vh' }}>
             <Canvas camera={{ position: [0, 20, 40], fov: 60 }}>
