@@ -9,16 +9,17 @@ const sunRS = 0.001;
 
 // Time Speed
 const timeSpeed = 0.01;
-      // Camera Moving
-      let camPosition;
-      let camRotation;
-      let isMousePressed = false;
-      let lastMouseX, lastMouseY;
-      let moveSpeed = 2;
-      let sensitivity = 0.002;
-      // let myModel;
+// Camera Moving
+let camPosition;
+let camRotation;
+let isMousePressed = false;
+let lastMouseX, lastMouseY;
+let moveSpeed = 2;
+let sensitivity = 0.002;
+// let myModel;
 
-      let bgTex, sunTex, earthTex;
+let bgTex, sunTex, earthTex;
+let orbitVisibleRef;
 
 class Planet {
   constructor(
@@ -144,6 +145,7 @@ class Planet {
       this.p.vertex(x, y, z);
     }
     this.p.endShape(this.p.CLOSE);
+
   }
 
   // show planet
@@ -153,7 +155,7 @@ class Planet {
     this.p.rotateY(this.rot);
     this.p.texture(this.tex);
     this.p.sphere(this.size, 64, 64);
-          //   this
+    //   this
 
     this.p.pop();
   }
@@ -170,6 +172,12 @@ const P5Sketch = () => {
       setMinSize(Number(e.target.value));
     }
   };
+
+  const [orbitVisible, setOrbitVisible] = useState(true);
+  const orbitVisibleRef = useRef(orbitVisible);
+  useEffect(() => {
+    orbitVisibleRef.current = orbitVisible;
+  }, [orbitVisible]);
 
   useEffect(() => {
     const f_planets = planets.filter(e =>
@@ -484,7 +492,9 @@ const P5Sketch = () => {
 
         // Update and display Earth
         for (var i = 0; i < all_planets.length; i++) {
-          all_planets[i].drawOrbit();
+          if (orbitVisibleRef.current) {
+            all_planets[i].drawOrbit();
+          }
           all_planets[i].evolution(time);
           all_planets[i].show();
         }
@@ -499,7 +509,7 @@ const P5Sketch = () => {
       };
     };
 
-    const p5Instance = new p5(sketch, sketchRef.current);
+    const p5Instance = new p5((p) => sketch(p, orbitVisibleRef), sketchRef.current);
 
     // Clean up the p5 instance on component unmount
     return () => {
@@ -517,6 +527,13 @@ const P5Sketch = () => {
         defaultValue={minSize}
         onKeyDown={handleMinSizeChange}
       />
+      <button
+        onClick={() => setOrbitVisible((prev) => !prev)}
+        className="absolute bottom-5 left-1/2 transform -translate-x-1/2 px-6 py-3 text-lg font-bold text-white bg-gray-600 hover:bg-gray-700 rounded-full shadow-lg"
+      >
+        {orbitVisible ? 'Orbit Invicible' : 'Orbit Vicible'}
+      </button>
+
     </div>
   </div>;
 };
