@@ -50,7 +50,7 @@ const P5Sketch = () => {
 
       setFPlanets(p_data);
 
-      const a_res = await fetch('/data/planet.json');
+      const a_res = await fetch('/data/WISE_202.json');
       if (!a_res.ok) {
         console.error(`Error fetching data: ${a_res.status} ${a_res.statusText}`);
         return;
