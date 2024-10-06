@@ -1,0 +1,65 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "./generated/client"
+}
+
+datasource db {
+  provider = "sqlite"
+  // url      = "file:./data.sqlite3"
+  url = env("POSTGRES_PRISMA_URL") // uses connection pooling
+  directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
+}
+
+model Asteroids {
+  full_name      String @id
+  a              Float
+  e              Float
+  I              Float
+  longNode       Float
+  longPeri       Float
+  q              Float
+  ad             Float
+  per_y          Float
+  data_arc       Float
+  condition_code Float
+  n_obs_used     Float
+  H              Float
+  pha            Float
+}
+
+model Comets {
+  full_name      String @id
+  a              Float
+  e              Float
+  I              Float
+  longNode       Float
+  longPeri       Float
+  q              Float
+  ad             Float
+  per_y          Float
+  data_arc       Float
+  condition_code Float
+  n_obs_used     Float
+  H              Float
+  pha            Float
+}
+
+model Planets {
+  full_name String @id
+  a         Float
+  e         Float
+  I         Float
+  L         Float
+  longPeri  Float
+  longNode  Float
+  size      Float
+  axialTilt Float
+  rotPeriod Float
+  tex       String
+}
