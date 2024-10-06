@@ -124,31 +124,10 @@ exports.Prisma.AsteroidsScalarFieldEnum = {
   a: 'a',
   e: 'e',
   I: 'I',
-  longNode: 'longNode',
+  L: 'L',
   longPeri: 'longPeri',
-  q: 'q',
-  ad: 'ad',
-  per_y: 'per_y',
-  data_arc: 'data_arc',
-  condition_code: 'condition_code',
-  n_obs_used: 'n_obs_used',
-  H: 'H',
-  pha: 'pha'
-};
-
-exports.Prisma.CometsScalarFieldEnum = {
-  full_name: 'full_name',
-  a: 'a',
-  e: 'e',
-  I: 'I',
   longNode: 'longNode',
-  longPeri: 'longPeri',
-  q: 'q',
-  ad: 'ad',
-  per_y: 'per_y',
-  data_arc: 'data_arc',
-  condition_code: 'condition_code',
-  n_obs_used: 'n_obs_used',
+  size: 'size',
   H: 'H',
   pha: 'pha'
 };
@@ -175,7 +154,6 @@ exports.Prisma.SortOrder = {
 
 exports.Prisma.ModelName = {
   Asteroids: 'Asteroids',
-  Comets: 'Comets',
   Planets: 'Planets'
 };
 

@@ -14,15 +14,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             },
         });
 
-        const asteroids = await prisma.asteroids.findMany({
-            where: {
-                pha: 'Y'
-            }
-        })
+        // const asteroids = await prisma.asteroids.findMany({
+        //     where: {
+        //         pha: 'Y'
+        //     }
+        // })
 
         res.status(200).json({
             planets: planets,
-            asteroids: asteroids,
+            // asteroids: asteroids,
         });
     }
     else {
