@@ -38,13 +38,13 @@ const P5Sketch = () => {
       const sketch = (p, orbitVisibleRef) => {
         let camPosition;
         let camRotation;
-        let isMousePressed = false;
-        let lastMouseX, lastMouseY;
+        // let isMousePressed = false;
+        // let lastMouseX, lastMouseY;
         let moveSpeed = 0;
-        let maxSpeed = 0.2;
+        let maxSpeed = 0.7;
         let acceleration = 0.002;
         let deceleration = 0.0005;
-        let sensitivity = 0.002;
+        // let sensitivity = 0.002;
         let rotationMaxSpeed = 0.0005;
         let rotationAcceleration = 0.0001;
         let rotationDeceleration = 0.000005;
@@ -89,6 +89,7 @@ const P5Sketch = () => {
             this.y = 0;
             this.z = 0;
             this.rot = 0;
+            this.displayRatio = 1;
           }
 
           evolution(time) {
@@ -169,7 +170,7 @@ const P5Sketch = () => {
             p.rotateX(p.HALF_PI);
             p.rotateZ(this.axialTilt);
             p.texture(saturnRingTex);
-            p.torus(this.size * 1.72, this.size * 0.3, 100, 2);
+            p.torus(this.size * 1.72 * this.displayRatio, this.size * 0.3 * this.displayRatio, 100, 2);
             p.pop();
           }
         }
@@ -235,6 +236,12 @@ const P5Sketch = () => {
           camPosition = p.createVector(0, -10, 180);
           camRotation = p.createVector(0, 0, 0);
           loadInfo();
+
+          let fov = p.PI / 3; // 設置視場角度 (Field of View)
+          let aspect = p.width / p.height; // 設置寬高比
+          let near = 0.1; // 設置近裁剪平面
+          let far = 10000; // 設置遠裁剪平面
+          p.perspective(fov, aspect, near, far);
         };
 
         p.draw = () => {
@@ -321,7 +328,9 @@ const P5Sketch = () => {
 
           if (moveSpeed !== 0) {
             moveIntent.add(forward.copy().mult(moveSpeed));
-            camPosition.add(moveIntent);
+            if (!checkCollision(p5.Vector.add(camPosition, moveIntent))) {
+              camPosition.add(moveIntent);
+            }
           }
 
           if (p.keyIsDown(82)) { // R - Reset camera position
@@ -364,7 +373,26 @@ const P5Sketch = () => {
           );
           return result;
         }
+        function checkCollision(newPosition) {
+          for (let planet of planets) {
+            let distance = p5.Vector.dist(newPosition, p.createVector(planet.x, planet.y, planet.z));
+            let minDistance = planet.size + 2;
+
+            if (distance < minDistance) {
+              // collision happens
+              return true;
+            }
+          }
+          let distance = p5.Vector.dist(newPosition, p.createVector(0, 0, 0));
+          let minDistance = sunRadius + 2;
+
+          if (distance < minDistance) {
+            return true;
+          }
+          return false;
+        }
       };
+
 
       const p5Instance = new p5((p) => sketch(p, orbitVisibleRef), sketchRef.current);
       return () => {
