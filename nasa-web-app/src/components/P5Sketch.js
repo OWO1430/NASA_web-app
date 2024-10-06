@@ -840,10 +840,11 @@ const P5Sketch = () => {
             style={{
               display: 'flex',
               alignContent: 'center',
+              color: 'black'
             }}
           >
             <p
-              className="font-bold white hover:bg-gray-700 shadow-lg"
+              className="font-bold hover:bg-gray-700 shadow-lg"
               style={{ marginRight: '10px' }}
             >
               Min Size
@@ -862,9 +863,10 @@ const P5Sketch = () => {
             style={{
               display: 'flex',
               alignContent: 'center',
+              color: 'black',
             }}>
             <p
-              className="font-bold white hover:bg-gray-700 shadow-lg"
+              className="font-bold hover:bg-gray-700 shadow-lg"
               style={{ marginRight: '10px' }}
             >
               Asteroid
