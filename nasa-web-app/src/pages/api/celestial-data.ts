@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method === 'GET') {
         // Get all posts
-        const posts = await prisma.planets.findMany({
+        const planets = await prisma.planets.findMany({
             where: {
                 size: {
                     gte: Number(req.query.minSize),
@@ -14,7 +14,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             },
         });
 
-        res.status(200).json(posts);
+        const asteroids = await prisma.asteroids.findMany({
+            where: {
+                pha: 'Y'
+            }
+        })
+
+        res.status(200).json({
+            planets: planets,
+            asteroids: asteroids,
+        });
     }
     else {
         res.status(400).json({ "message": "invalid method" });

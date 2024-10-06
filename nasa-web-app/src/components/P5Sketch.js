@@ -162,6 +162,7 @@ const P5Sketch = () => {
 
   const [minSize, setMinSize] = useState(1000);
   const [fPlanets, setFPlanets] = useState(null);
+  const [fAster, setFAster] = useState(null);
 
   const handleMinSizeChange = (e) => {
     if (e.key == 'Enter') {
@@ -179,7 +180,8 @@ const P5Sketch = () => {
       // NOTE: maybe handle response error here
 
       const data = await res.json();
-      setFPlanets(data);
+      setFPlanets(data.planets);
+      setFAster(data.asteroids);
     };
 
     fetchData();
@@ -187,14 +189,17 @@ const P5Sketch = () => {
   }, [minSize]);
 
   useEffect(() => {
-    if (fPlanets != null) {
+    if (fPlanets != null && fAster != null) {
       console.log(fPlanets);
+      console.log(fAster);
 
       // Initialize p5 instance
       const sketch = (p) => {
         let planets = [];
         let all_planets = [];
         let planet_texes = [];
+        let all_aster = [];
+        let aster_texes = [];
 
         let sunR = 0;
         let time = 0;
@@ -222,7 +227,7 @@ const P5Sketch = () => {
             all_planets.push(
               new Planet(
                 p,
-                fPlanets[i].name,
+                fPlanets[i].full_name,
                 fPlanets[i].a,
                 fPlanets[i].e,
                 fPlanets[i].I,
@@ -233,6 +238,25 @@ const P5Sketch = () => {
                 planet_texes[i],
                 fPlanets[i].axialTilt,
                 fPlanets[i].rotPeriod,
+              )
+            );
+          }
+
+          for (var i = 0; i < fAster.length; i++) {
+            all_aster.push(
+              new Planet(
+                p,
+                fAster[i].full_name,
+                fAster[i].a,
+                fAster[i].e,
+                fAster[i].I,
+                fAster[i].L,
+                fAster[i].longPeri,
+                fAster[i].longNode,
+                fAster[i].size,
+                sunTex,
+                1,
+                1,
               )
             );
           }
@@ -498,6 +522,12 @@ const P5Sketch = () => {
             all_planets[i].drawOrbit();
             all_planets[i].evolution(time);
             all_planets[i].show();
+          }
+
+          for (var i = 0; i < all_aster.length; i++) {
+            all_aster[i].drawOrbit();
+            all_aster[i].evolution(time);
+            all_aster[i].show();
           }
 
           time += timeSpeed;
