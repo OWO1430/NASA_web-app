@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import p5 from 'p5';
 // import 'p5/lib/addons/p5.dom';
-import { or } from 'three/webgpu'
+import { or } from 'three/webgpu';
 import { Tube } from '@react-three/drei';
 
 const sunRadius = 696340 * 10 ** -5;
@@ -163,6 +163,8 @@ const P5Sketch = () => {
   const [minSize, setMinSize] = useState(1000);
   const [fPlanets, setFPlanets] = useState(null);
   const [fAster, setFAster] = useState(null);
+  const [showPlanet, setShowPlanet] = useState(true);
+  const [showAst, setShowAst] = useState(false);
   const [orbitVisible, setOrbitVisible] = useState(true);
   const orbitVisibleRef = useRef(orbitVisible);
   const [flyingMode, setFlyingMode] = useState(true);
@@ -197,36 +199,44 @@ const P5Sketch = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const p_res = await fetch('/data/planet.json');
-      if (!p_res.ok) {
-        console.error(`Error fetching data: ${p_res.status} ${p_res.statusText}`);
-        return;
+      if (showPlanet) {
+        const p_res = await fetch('/data/planet.json');
+        if (!p_res.ok) {
+          console.error(`Error fetching data: ${p_res.status} ${p_res.statusText}`);
+          return;
+        }
+        var p_data = await p_res.json();
+        var p_data = p_data.filter(e => (
+          e.size > minSize
+        ));
+
+        setFPlanets(p_data);
+      } else {
+        setFPlanets([]);
       }
-      var p_data = await p_res.json();
-      var p_data = p_data.filter(e => (
-        e.size > minSize
-      ));
 
-      setFPlanets(p_data);
-
-      const a_res = await fetch('/data/WISE_202.json');
-      if (!a_res.ok) {
-        console.error(`Error fetching data: ${a_res.status} ${a_res.statusText}`);
-        return;
+      if (showAst) {
+        const a_res = await fetch('/data/WISE_202.json');
+        if (!a_res.ok) {
+          console.error(`Error fetching data: ${a_res.status} ${a_res.statusText}`);
+          return;
+        }
+        var a_data = await a_res.json();
+        var a_data = a_data.filter(e => (
+          e.PHA === 'Y'
+        ));
+        setFAster(a_data);
+      } else {
+        setFAster([]);
       }
-      var a_data = await a_res.json();
-      var a_data = a_data.filter(e => (
-        true
-      ));
 
-      setFAster(a_data);
     };
 
     fetchData();
-  }, [minSize]);
+  }, [minSize, showPlanet, showAst]);
 
   useEffect(() => {
-    if (fPlanets != null) {
+    if (fPlanets != null && fAster != null) {
       // Initialize p5 instance
       const sketch = (p, orbitVisibleRef, selectedPlanetRef, flyingModeRef) => {
         let camPosition;
@@ -258,6 +268,7 @@ const P5Sketch = () => {
         let bgTex, sunTex, saturnRingTex;
         let planetTex = [];
         let planets = [];
+        let asteroids = [];
 
         // HUD
         let HUDs = [];
@@ -397,39 +408,44 @@ const P5Sketch = () => {
             '/texture/2k_neptune.jpg',
           ];
 
-          planetTexturePaths.forEach((path) => {
-            planetTex.push(p.loadImage(path));
+          fPlanets.forEach((planet) => {
+            planetTex.push(p.loadImage(planet.tex));
           });
         };
 
         const loadInfo = () => {
-          let planetInfo = [
-            ["Mercury", 0.38709927, 0.20563593, 7.00497902, 252.25032350, 77.45779628, 48.33076593, 4879, 0.000593, 58.65],
-            ["Venus", 0.72333566, 0.00677672, 3.39467605, 181.97909950, 131.60246718, 76.67984255, 12104, 3.0962, -243],
-            ["Earth", 1.00000261, 0.01671123, -0.00001531, 100.46457166, 102.93768193, 0.0, 12756, 0.4084, 0.996],
-            ["Mars", 1.52371034, 0.09339410, 1.84969142, -4.55343205, -23.94362959, 49.55953891, 6792, 0.4398, 1.025],
-            ["Jupiter", 5.20288700, 0.04838624, 1.30439695, 34.39644051, 14.72847983, 100.47390909, 142984, 0.0541, 0.4125],
-            ["Saturn", 9.53667594, 0.05386179, 2.48599187, 49.95424423, 92.59887831, 113.66242448, 120536, 0.4660, 0.446],
-            ["Uranus", 19.18916464, 0.04725744, 0.77263783, 313.23810451, 170.95427630, 74.01692503, 51118, 1.7069, -0.717],
-            ["Neptune", 30.06992276, 0.00859048, 1.77004347, -55.12002969, 44.96476227, 131.78422574, 49528, 0.4939, 0.671]
-          ];
-
-          for (let i = 0; i < planetInfo.length; i++) {
-            let pInfo = planetInfo[i];
-            let tex = planetTex[i];
+          for (let i = 0; i < fPlanets.length; i++) {
             planets.push(
               new Planet(
-                pInfo[0], // name
-                pInfo[1], // a
-                pInfo[2], // e
-                pInfo[3], // I
-                pInfo[4], // L
-                pInfo[5], // longPeri
-                pInfo[6], // longNode
-                pInfo[7], // size
-                pInfo[8], // axialTilt
-                pInfo[9], // rotationPeriod
-                tex // texture
+                fPlanets[i].full_name,
+                fPlanets[i].a,
+                fPlanets[i].e,
+                fPlanets[i].I,
+                fPlanets[i].L,
+                fPlanets[i].longPeri,
+                fPlanets[i].longNode,
+                fPlanets[i].size,
+                fPlanets[i].axialTilt,
+                fPlanets[i].rotPeriod,
+                planetTex[i],
+              )
+            );
+          }
+
+          for (let i = 0; i < fAster.length; i++) {
+            asteroids.push(
+              new Planet(
+                fAster[i].full_name,
+                fAster[i].a,
+                fAster[i].e,
+                fAster[i].I,
+                fAster[i].L,
+                fAster[i].longPeri,
+                fAster[i].longNode,
+                fAster[i].size || 6000,
+                1,
+                1,
+                planetTex[0],
               )
             );
           }
@@ -594,6 +610,12 @@ const P5Sketch = () => {
             if (planet.name === 'Saturn') {
               planet.showSaturnRing();
             }
+          }
+
+          for (let asteroid of asteroids) {
+            asteroid.drawOrbit();
+            asteroid.evolution(time);
+            asteroid.show();
           }
 
           //HUD
@@ -777,7 +799,7 @@ const P5Sketch = () => {
               planetIndex = 7;
             }
             else if (planetName === 'Neptune') {
-              planetIndex = 8
+              planetIndex = 8;
             }
             else {
               usingPlanetCamera = false;
@@ -799,19 +821,66 @@ const P5Sketch = () => {
         p5Instance.remove();
       };
     }
-  }, [fPlanets]);
+  }, [fPlanets, fAster]);
 
   return (
     <div>
       <div ref={sketchRef} style={{ position: 'relative' }}>
-        <p>Min Size: </p>
-        <input
-          type="number"
-          id="min_size_input"
-          placeholder="0"
-          defaultValue={minSize}
-          onKeyDown={handleMinSizeChange}
-        />
+        <div
+          className="absolute top-5 left-1/2 transform -translate-x-1/2 "
+          style={{
+            fontSize: 12,
+            borderRadius: 10,
+            background: 'white',
+            opacity: 0.3,
+            padding: 8,
+          }}
+        >
+          <div
+            style={{
+              display: 'flex',
+              alignContent: 'center',
+            }}
+          >
+            <p
+              className="font-bold white hover:bg-gray-700 shadow-lg"
+              style={{ marginRight: '10px' }}
+            >
+              Min Size
+            </p>
+            <input
+              type="number"
+              id="min_size_input"
+              placeholder="0"
+              defaultValue={minSize}
+              onKeyDown={handleMinSizeChange}
+              style={{ width: '90px', paddingLeft: '3px' }}
+            />
+          </div>
+
+          <div
+            style={{
+              display: 'flex',
+              alignContent: 'center',
+            }}>
+            <p
+              className="font-bold white hover:bg-gray-700 shadow-lg"
+              style={{ marginRight: '10px' }}
+            >
+              Asteroid
+            </p>
+            <input
+              type="checkbox"
+              checked={showAst}
+              onChange={() => {
+                setShowAst(!showAst);
+              }}
+            />
+          </div>
+        </div>
+
+
+
         <button
           onClick={() => setOrbitVisible((prev) => !prev)}
           className="absolute bottom-5 left-1/4 transform -translate-x-1/2 px-6 py-3 text-lg font-bold text-white bg-gray-600 hover:bg-gray-700 rounded-full shadow-lg"
