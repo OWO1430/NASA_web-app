@@ -38,14 +38,29 @@ const P5Sketch = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const res = await fetch(`/api/celestial-data?minSize=${encodeURIComponent(minSize)}`);
-      if (!res.ok) {
-        console.error(`Error fetching data: ${res.status} ${res.statusText}`);
+      const p_res = await fetch('/data/planet.json');
+      if (!p_res.ok) {
+        console.error(`Error fetching data: ${p_res.status} ${p_res.statusText}`);
         return;
       }
-      const data = await res.json();
-      setFPlanets(data.planets);
-      setFAster(data.asteroids);
+      var p_data = await p_res.json();
+      var p_data = p_data.filter(e => (
+        e.size > minSize
+      ));
+
+      setFPlanets(p_data);
+
+      const a_res = await fetch('/data/planet.json');
+      if (!a_res.ok) {
+        console.error(`Error fetching data: ${a_res.status} ${a_res.statusText}`);
+        return;
+      }
+      var a_data = await a_res.json();
+      var a_data = a_data.filter(e => (
+        true
+      ));
+
+      setFAster(a_data);
     };
 
     fetchData();
@@ -209,31 +224,10 @@ const P5Sketch = () => {
         };
 
         const loadInfo = () => {
-<<<<<<< HEAD
           for (let i = 0; i < fPlanets.length; i++) {
             planets.push(
               new Planet(
                 fPlanets[i].full_name,
-=======
-          // let planetInfo = [
-          //   ["Mercury", 0.38709927, 0.20563593, 7.00497902, 252.25032350, 77.45779628, 48.33076593, 4879, 0.000593, 58.65],
-          //   ["Venus", 0.72333566, 0.00677672, 3.39467605, 181.97909950, 131.60246718, 76.67984255, 12104, 3.0962, -243],
-          //   ["Earth", 1.00000261, 0.01671123, -0.00001531, 100.46457166, 102.93768193, 0.0, 12756, 0.4084, 0.996],
-          //   ["Mars", 1.52371034, 0.09339410, 1.84969142, -4.55343205, -23.94362959, 49.55953891, 6792, 0.4398, 1.025],
-          //   ["Jupiter", 5.20288700, 0.04838624, 1.30439695, 34.39644051, 14.72847983, 100.47390909, 142984, 0.0541, 0.4125],
-          //   ["Saturn", 9.53667594, 0.05386179, 2.48599187, 49.95424423, 92.59887831, 113.66242448, 120536, 0.4660, 0.446],
-          //   ["Uranus", 19.18916464, 0.04725744, 0.77263783, 313.23810451, 170.95427630, 74.01692503, 51118, 1.7069, -0.717],
-          //   ["Neptune", 30.06992276, 0.00859048, 1.77004347, -55.12002969, 44.96476227, 131.78422574, 49528, 0.4939, 0.671]
-          // ];
-
-          for (let i = 0; i < fPlanets.length; i++) {
-            // let pInfo = planetInfo[i];
-            let tex = planetTex[i];
-            planets.push(
-              new Planet(
-                // p,
-                fPlanets[i].name,
->>>>>>> 835588d59ab43052e4ca5f0a1e6125d6d53e63e3
                 fPlanets[i].a,
                 fPlanets[i].e,
                 fPlanets[i].I,
@@ -243,7 +237,6 @@ const P5Sketch = () => {
                 fPlanets[i].size,
                 fPlanets[i].axialTilt,
                 fPlanets[i].rotPeriod,
-<<<<<<< HEAD
                 planetTex[i],
               )
             );
@@ -263,20 +256,6 @@ const P5Sketch = () => {
                 1,
                 1,
                 planetTex[0],
-=======
-                tex
-                // pInfo[0], // name
-                // pInfo[1], // a
-                // pInfo[2], // e
-                // pInfo[3], // I
-                // pInfo[4], // L
-                // pInfo[5], // longPeri
-                // pInfo[6], // longNode
-                // pInfo[7], // size
-                // pInfo[8], // axialTilt
-                // pInfo[9], // rotationPeriod
-                // tex // texture
->>>>>>> 835588d59ab43052e4ca5f0a1e6125d6d53e63e3
               )
             );
           }
