@@ -135,7 +135,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "/Users/trinkysu/Documents/NASA_web-app/nasa-web-app/prisma/generated/client",
+      "value": "/home/daniel0321/Documents/projects/NASA_web-app/nasa-web-app/prisma/generated/client",
       "fromEnvVar": null
     },
     "config": {
@@ -144,12 +144,12 @@ const config = {
     "binaryTargets": [
       {
         "fromEnvVar": null,
-        "value": "darwin-arm64",
+        "value": "debian-openssl-3.0.x",
         "native": true
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "/Users/trinkysu/Documents/NASA_web-app/nasa-web-app/prisma/schema.prisma",
+    "sourceFilePath": "/home/daniel0321/Documents/projects/NASA_web-app/nasa-web-app/prisma/schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
