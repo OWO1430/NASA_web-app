@@ -17,37 +17,16 @@ datasource db {
 }
 
 model Asteroids {
-  full_name      String @id
-  a              Float
-  e              Float
-  I              Float
-  longNode       Float
-  longPeri       Float
-  q              Float
-  ad             Float
-  per_y          Float
-  data_arc       Float
-  condition_code Float
-  n_obs_used     Float
-  H              Float
-  pha            Float
-}
-
-model Comets {
-  full_name      String @id
-  a              Float
-  e              Float
-  I              Float
-  longNode       Float
-  longPeri       Float
-  q              Float
-  ad             Float
-  per_y          Float
-  data_arc       Float
-  condition_code Float
-  n_obs_used     Float
-  H              Float
-  pha            Float
+  full_name String @id
+  a         Float
+  e         Float
+  I         Float
+  L         Float
+  longPeri  Float
+  longNode  Float
+  size      Float
+  H         Float
+  pha       String
 }
 
 model Planets {

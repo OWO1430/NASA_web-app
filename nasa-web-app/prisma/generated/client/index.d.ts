@@ -19,11 +19,6 @@ export type PrismaPromise<T> = $Public.PrismaPromise<T>
  */
 export type Asteroids = $Result.DefaultSelection<Prisma.$AsteroidsPayload>
 /**
- * Model Comets
- * 
- */
-export type Comets = $Result.DefaultSelection<Prisma.$CometsPayload>
-/**
  * Model Planets
  * 
  */
@@ -161,16 +156,6 @@ export class PrismaClient<
     * ```
     */
   get asteroids(): Prisma.AsteroidsDelegate<ExtArgs>;
-
-  /**
-   * `prisma.comets`: Exposes CRUD operations for the **Comets** model.
-    * Example usage:
-    * ```ts
-    * // Fetch zero or more Comets
-    * const comets = await prisma.comets.findMany()
-    * ```
-    */
-  get comets(): Prisma.CometsDelegate<ExtArgs>;
 
   /**
    * `prisma.planets`: Exposes CRUD operations for the **Planets** model.
@@ -623,7 +608,6 @@ export namespace Prisma {
 
   export const ModelName: {
     Asteroids: 'Asteroids',
-    Comets: 'Comets',
     Planets: 'Planets'
   };
 
@@ -640,7 +624,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "asteroids" | "comets" | "planets"
+      modelProps: "asteroids" | "planets"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -711,76 +695,6 @@ export namespace Prisma {
           count: {
             args: Prisma.AsteroidsCountArgs<ExtArgs>
             result: $Utils.Optional<AsteroidsCountAggregateOutputType> | number
-          }
-        }
-      }
-      Comets: {
-        payload: Prisma.$CometsPayload<ExtArgs>
-        fields: Prisma.CometsFieldRefs
-        operations: {
-          findUnique: {
-            args: Prisma.CometsFindUniqueArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$CometsPayload> | null
-          }
-          findUniqueOrThrow: {
-            args: Prisma.CometsFindUniqueOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$CometsPayload>
-          }
-          findFirst: {
-            args: Prisma.CometsFindFirstArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$CometsPayload> | null
-          }
-          findFirstOrThrow: {
-            args: Prisma.CometsFindFirstOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$CometsPayload>
-          }
-          findMany: {
-            args: Prisma.CometsFindManyArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$CometsPayload>[]
-          }
-          create: {
-            args: Prisma.CometsCreateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$CometsPayload>
-          }
-          createMany: {
-            args: Prisma.CometsCreateManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          createManyAndReturn: {
-            args: Prisma.CometsCreateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$CometsPayload>[]
-          }
-          delete: {
-            args: Prisma.CometsDeleteArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$CometsPayload>
-          }
-          update: {
-            args: Prisma.CometsUpdateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$CometsPayload>
-          }
-          deleteMany: {
-            args: Prisma.CometsDeleteManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          updateMany: {
-            args: Prisma.CometsUpdateManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          upsert: {
-            args: Prisma.CometsUpsertArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$CometsPayload>
-          }
-          aggregate: {
-            args: Prisma.CometsAggregateArgs<ExtArgs>
-            result: $Utils.Optional<AggregateComets>
-          }
-          groupBy: {
-            args: Prisma.CometsGroupByArgs<ExtArgs>
-            result: $Utils.Optional<CometsGroupByOutputType>[]
-          }
-          count: {
-            args: Prisma.CometsCountArgs<ExtArgs>
-            result: $Utils.Optional<CometsCountAggregateOutputType> | number
           }
         }
       }
@@ -1031,32 +945,22 @@ export namespace Prisma {
     a: number | null
     e: number | null
     I: number | null
-    longNode: number | null
+    L: number | null
     longPeri: number | null
-    q: number | null
-    ad: number | null
-    per_y: number | null
-    data_arc: number | null
-    condition_code: number | null
-    n_obs_used: number | null
+    longNode: number | null
+    size: number | null
     H: number | null
-    pha: number | null
   }
 
   export type AsteroidsSumAggregateOutputType = {
     a: number | null
     e: number | null
     I: number | null
-    longNode: number | null
+    L: number | null
     longPeri: number | null
-    q: number | null
-    ad: number | null
-    per_y: number | null
-    data_arc: number | null
-    condition_code: number | null
-    n_obs_used: number | null
+    longNode: number | null
+    size: number | null
     H: number | null
-    pha: number | null
   }
 
   export type AsteroidsMinAggregateOutputType = {
@@ -1064,16 +968,12 @@ export namespace Prisma {
     a: number | null
     e: number | null
     I: number | null
-    longNode: number | null
+    L: number | null
     longPeri: number | null
-    q: number | null
-    ad: number | null
-    per_y: number | null
-    data_arc: number | null
-    condition_code: number | null
-    n_obs_used: number | null
+    longNode: number | null
+    size: number | null
     H: number | null
-    pha: number | null
+    pha: string | null
   }
 
   export type AsteroidsMaxAggregateOutputType = {
@@ -1081,16 +981,12 @@ export namespace Prisma {
     a: number | null
     e: number | null
     I: number | null
-    longNode: number | null
+    L: number | null
     longPeri: number | null
-    q: number | null
-    ad: number | null
-    per_y: number | null
-    data_arc: number | null
-    condition_code: number | null
-    n_obs_used: number | null
+    longNode: number | null
+    size: number | null
     H: number | null
-    pha: number | null
+    pha: string | null
   }
 
   export type AsteroidsCountAggregateOutputType = {
@@ -1098,14 +994,10 @@ export namespace Prisma {
     a: number
     e: number
     I: number
-    longNode: number
+    L: number
     longPeri: number
-    q: number
-    ad: number
-    per_y: number
-    data_arc: number
-    condition_code: number
-    n_obs_used: number
+    longNode: number
+    size: number
     H: number
     pha: number
     _all: number
@@ -1116,32 +1008,22 @@ export namespace Prisma {
     a?: true
     e?: true
     I?: true
-    longNode?: true
+    L?: true
     longPeri?: true
-    q?: true
-    ad?: true
-    per_y?: true
-    data_arc?: true
-    condition_code?: true
-    n_obs_used?: true
+    longNode?: true
+    size?: true
     H?: true
-    pha?: true
   }
 
   export type AsteroidsSumAggregateInputType = {
     a?: true
     e?: true
     I?: true
-    longNode?: true
+    L?: true
     longPeri?: true
-    q?: true
-    ad?: true
-    per_y?: true
-    data_arc?: true
-    condition_code?: true
-    n_obs_used?: true
+    longNode?: true
+    size?: true
     H?: true
-    pha?: true
   }
 
   export type AsteroidsMinAggregateInputType = {
@@ -1149,14 +1031,10 @@ export namespace Prisma {
     a?: true
     e?: true
     I?: true
-    longNode?: true
+    L?: true
     longPeri?: true
-    q?: true
-    ad?: true
-    per_y?: true
-    data_arc?: true
-    condition_code?: true
-    n_obs_used?: true
+    longNode?: true
+    size?: true
     H?: true
     pha?: true
   }
@@ -1166,14 +1044,10 @@ export namespace Prisma {
     a?: true
     e?: true
     I?: true
-    longNode?: true
+    L?: true
     longPeri?: true
-    q?: true
-    ad?: true
-    per_y?: true
-    data_arc?: true
-    condition_code?: true
-    n_obs_used?: true
+    longNode?: true
+    size?: true
     H?: true
     pha?: true
   }
@@ -1183,14 +1057,10 @@ export namespace Prisma {
     a?: true
     e?: true
     I?: true
-    longNode?: true
+    L?: true
     longPeri?: true
-    q?: true
-    ad?: true
-    per_y?: true
-    data_arc?: true
-    condition_code?: true
-    n_obs_used?: true
+    longNode?: true
+    size?: true
     H?: true
     pha?: true
     _all?: true
@@ -1287,16 +1157,12 @@ export namespace Prisma {
     a: number
     e: number
     I: number
-    longNode: number
+    L: number
     longPeri: number
-    q: number
-    ad: number
-    per_y: number
-    data_arc: number
-    condition_code: number
-    n_obs_used: number
+    longNode: number
+    size: number
     H: number
-    pha: number
+    pha: string
     _count: AsteroidsCountAggregateOutputType | null
     _avg: AsteroidsAvgAggregateOutputType | null
     _sum: AsteroidsSumAggregateOutputType | null
@@ -1323,14 +1189,10 @@ export namespace Prisma {
     a?: boolean
     e?: boolean
     I?: boolean
-    longNode?: boolean
+    L?: boolean
     longPeri?: boolean
-    q?: boolean
-    ad?: boolean
-    per_y?: boolean
-    data_arc?: boolean
-    condition_code?: boolean
-    n_obs_used?: boolean
+    longNode?: boolean
+    size?: boolean
     H?: boolean
     pha?: boolean
   }, ExtArgs["result"]["asteroids"]>
@@ -1340,14 +1202,10 @@ export namespace Prisma {
     a?: boolean
     e?: boolean
     I?: boolean
-    longNode?: boolean
+    L?: boolean
     longPeri?: boolean
-    q?: boolean
-    ad?: boolean
-    per_y?: boolean
-    data_arc?: boolean
-    condition_code?: boolean
-    n_obs_used?: boolean
+    longNode?: boolean
+    size?: boolean
     H?: boolean
     pha?: boolean
   }, ExtArgs["result"]["asteroids"]>
@@ -1357,14 +1215,10 @@ export namespace Prisma {
     a?: boolean
     e?: boolean
     I?: boolean
-    longNode?: boolean
+    L?: boolean
     longPeri?: boolean
-    q?: boolean
-    ad?: boolean
-    per_y?: boolean
-    data_arc?: boolean
-    condition_code?: boolean
-    n_obs_used?: boolean
+    longNode?: boolean
+    size?: boolean
     H?: boolean
     pha?: boolean
   }
@@ -1378,16 +1232,12 @@ export namespace Prisma {
       a: number
       e: number
       I: number
-      longNode: number
+      L: number
       longPeri: number
-      q: number
-      ad: number
-      per_y: number
-      data_arc: number
-      condition_code: number
-      n_obs_used: number
+      longNode: number
+      size: number
       H: number
-      pha: number
+      pha: string
     }, ExtArgs["result"]["asteroids"]>
     composites: {}
   }
@@ -1785,16 +1635,12 @@ export namespace Prisma {
     readonly a: FieldRef<"Asteroids", 'Float'>
     readonly e: FieldRef<"Asteroids", 'Float'>
     readonly I: FieldRef<"Asteroids", 'Float'>
-    readonly longNode: FieldRef<"Asteroids", 'Float'>
+    readonly L: FieldRef<"Asteroids", 'Float'>
     readonly longPeri: FieldRef<"Asteroids", 'Float'>
-    readonly q: FieldRef<"Asteroids", 'Float'>
-    readonly ad: FieldRef<"Asteroids", 'Float'>
-    readonly per_y: FieldRef<"Asteroids", 'Float'>
-    readonly data_arc: FieldRef<"Asteroids", 'Float'>
-    readonly condition_code: FieldRef<"Asteroids", 'Float'>
-    readonly n_obs_used: FieldRef<"Asteroids", 'Float'>
+    readonly longNode: FieldRef<"Asteroids", 'Float'>
+    readonly size: FieldRef<"Asteroids", 'Float'>
     readonly H: FieldRef<"Asteroids", 'Float'>
-    readonly pha: FieldRef<"Asteroids", 'Float'>
+    readonly pha: FieldRef<"Asteroids", 'String'>
   }
     
 
@@ -2078,1072 +1924,6 @@ export namespace Prisma {
      * Select specific fields to fetch from the Asteroids
      */
     select?: AsteroidsSelect<ExtArgs> | null
-  }
-
-
-  /**
-   * Model Comets
-   */
-
-  export type AggregateComets = {
-    _count: CometsCountAggregateOutputType | null
-    _avg: CometsAvgAggregateOutputType | null
-    _sum: CometsSumAggregateOutputType | null
-    _min: CometsMinAggregateOutputType | null
-    _max: CometsMaxAggregateOutputType | null
-  }
-
-  export type CometsAvgAggregateOutputType = {
-    a: number | null
-    e: number | null
-    I: number | null
-    longNode: number | null
-    longPeri: number | null
-    q: number | null
-    ad: number | null
-    per_y: number | null
-    data_arc: number | null
-    condition_code: number | null
-    n_obs_used: number | null
-    H: number | null
-    pha: number | null
-  }
-
-  export type CometsSumAggregateOutputType = {
-    a: number | null
-    e: number | null
-    I: number | null
-    longNode: number | null
-    longPeri: number | null
-    q: number | null
-    ad: number | null
-    per_y: number | null
-    data_arc: number | null
-    condition_code: number | null
-    n_obs_used: number | null
-    H: number | null
-    pha: number | null
-  }
-
-  export type CometsMinAggregateOutputType = {
-    full_name: string | null
-    a: number | null
-    e: number | null
-    I: number | null
-    longNode: number | null
-    longPeri: number | null
-    q: number | null
-    ad: number | null
-    per_y: number | null
-    data_arc: number | null
-    condition_code: number | null
-    n_obs_used: number | null
-    H: number | null
-    pha: number | null
-  }
-
-  export type CometsMaxAggregateOutputType = {
-    full_name: string | null
-    a: number | null
-    e: number | null
-    I: number | null
-    longNode: number | null
-    longPeri: number | null
-    q: number | null
-    ad: number | null
-    per_y: number | null
-    data_arc: number | null
-    condition_code: number | null
-    n_obs_used: number | null
-    H: number | null
-    pha: number | null
-  }
-
-  export type CometsCountAggregateOutputType = {
-    full_name: number
-    a: number
-    e: number
-    I: number
-    longNode: number
-    longPeri: number
-    q: number
-    ad: number
-    per_y: number
-    data_arc: number
-    condition_code: number
-    n_obs_used: number
-    H: number
-    pha: number
-    _all: number
-  }
-
-
-  export type CometsAvgAggregateInputType = {
-    a?: true
-    e?: true
-    I?: true
-    longNode?: true
-    longPeri?: true
-    q?: true
-    ad?: true
-    per_y?: true
-    data_arc?: true
-    condition_code?: true
-    n_obs_used?: true
-    H?: true
-    pha?: true
-  }
-
-  export type CometsSumAggregateInputType = {
-    a?: true
-    e?: true
-    I?: true
-    longNode?: true
-    longPeri?: true
-    q?: true
-    ad?: true
-    per_y?: true
-    data_arc?: true
-    condition_code?: true
-    n_obs_used?: true
-    H?: true
-    pha?: true
-  }
-
-  export type CometsMinAggregateInputType = {
-    full_name?: true
-    a?: true
-    e?: true
-    I?: true
-    longNode?: true
-    longPeri?: true
-    q?: true
-    ad?: true
-    per_y?: true
-    data_arc?: true
-    condition_code?: true
-    n_obs_used?: true
-    H?: true
-    pha?: true
-  }
-
-  export type CometsMaxAggregateInputType = {
-    full_name?: true
-    a?: true
-    e?: true
-    I?: true
-    longNode?: true
-    longPeri?: true
-    q?: true
-    ad?: true
-    per_y?: true
-    data_arc?: true
-    condition_code?: true
-    n_obs_used?: true
-    H?: true
-    pha?: true
-  }
-
-  export type CometsCountAggregateInputType = {
-    full_name?: true
-    a?: true
-    e?: true
-    I?: true
-    longNode?: true
-    longPeri?: true
-    q?: true
-    ad?: true
-    per_y?: true
-    data_arc?: true
-    condition_code?: true
-    n_obs_used?: true
-    H?: true
-    pha?: true
-    _all?: true
-  }
-
-  export type CometsAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Filter which Comets to aggregate.
-     */
-    where?: CometsWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of Comets to fetch.
-     */
-    orderBy?: CometsOrderByWithRelationInput | CometsOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the start position
-     */
-    cursor?: CometsWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` Comets from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` Comets.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Count returned Comets
-    **/
-    _count?: true | CometsCountAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to average
-    **/
-    _avg?: CometsAvgAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to sum
-    **/
-    _sum?: CometsSumAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the minimum value
-    **/
-    _min?: CometsMinAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the maximum value
-    **/
-    _max?: CometsMaxAggregateInputType
-  }
-
-  export type GetCometsAggregateType<T extends CometsAggregateArgs> = {
-        [P in keyof T & keyof AggregateComets]: P extends '_count' | 'count'
-      ? T[P] extends true
-        ? number
-        : GetScalarType<T[P], AggregateComets[P]>
-      : GetScalarType<T[P], AggregateComets[P]>
-  }
-
-
-
-
-  export type CometsGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: CometsWhereInput
-    orderBy?: CometsOrderByWithAggregationInput | CometsOrderByWithAggregationInput[]
-    by: CometsScalarFieldEnum[] | CometsScalarFieldEnum
-    having?: CometsScalarWhereWithAggregatesInput
-    take?: number
-    skip?: number
-    _count?: CometsCountAggregateInputType | true
-    _avg?: CometsAvgAggregateInputType
-    _sum?: CometsSumAggregateInputType
-    _min?: CometsMinAggregateInputType
-    _max?: CometsMaxAggregateInputType
-  }
-
-  export type CometsGroupByOutputType = {
-    full_name: string
-    a: number
-    e: number
-    I: number
-    longNode: number
-    longPeri: number
-    q: number
-    ad: number
-    per_y: number
-    data_arc: number
-    condition_code: number
-    n_obs_used: number
-    H: number
-    pha: number
-    _count: CometsCountAggregateOutputType | null
-    _avg: CometsAvgAggregateOutputType | null
-    _sum: CometsSumAggregateOutputType | null
-    _min: CometsMinAggregateOutputType | null
-    _max: CometsMaxAggregateOutputType | null
-  }
-
-  type GetCometsGroupByPayload<T extends CometsGroupByArgs> = Prisma.PrismaPromise<
-    Array<
-      PickEnumerable<CometsGroupByOutputType, T['by']> &
-        {
-          [P in ((keyof T) & (keyof CometsGroupByOutputType))]: P extends '_count'
-            ? T[P] extends boolean
-              ? number
-              : GetScalarType<T[P], CometsGroupByOutputType[P]>
-            : GetScalarType<T[P], CometsGroupByOutputType[P]>
-        }
-      >
-    >
-
-
-  export type CometsSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    full_name?: boolean
-    a?: boolean
-    e?: boolean
-    I?: boolean
-    longNode?: boolean
-    longPeri?: boolean
-    q?: boolean
-    ad?: boolean
-    per_y?: boolean
-    data_arc?: boolean
-    condition_code?: boolean
-    n_obs_used?: boolean
-    H?: boolean
-    pha?: boolean
-  }, ExtArgs["result"]["comets"]>
-
-  export type CometsSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    full_name?: boolean
-    a?: boolean
-    e?: boolean
-    I?: boolean
-    longNode?: boolean
-    longPeri?: boolean
-    q?: boolean
-    ad?: boolean
-    per_y?: boolean
-    data_arc?: boolean
-    condition_code?: boolean
-    n_obs_used?: boolean
-    H?: boolean
-    pha?: boolean
-  }, ExtArgs["result"]["comets"]>
-
-  export type CometsSelectScalar = {
-    full_name?: boolean
-    a?: boolean
-    e?: boolean
-    I?: boolean
-    longNode?: boolean
-    longPeri?: boolean
-    q?: boolean
-    ad?: boolean
-    per_y?: boolean
-    data_arc?: boolean
-    condition_code?: boolean
-    n_obs_used?: boolean
-    H?: boolean
-    pha?: boolean
-  }
-
-
-  export type $CometsPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    name: "Comets"
-    objects: {}
-    scalars: $Extensions.GetPayloadResult<{
-      full_name: string
-      a: number
-      e: number
-      I: number
-      longNode: number
-      longPeri: number
-      q: number
-      ad: number
-      per_y: number
-      data_arc: number
-      condition_code: number
-      n_obs_used: number
-      H: number
-      pha: number
-    }, ExtArgs["result"]["comets"]>
-    composites: {}
-  }
-
-  type CometsGetPayload<S extends boolean | null | undefined | CometsDefaultArgs> = $Result.GetResult<Prisma.$CometsPayload, S>
-
-  type CometsCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
-    Omit<CometsFindManyArgs, 'select' | 'include' | 'distinct'> & {
-      select?: CometsCountAggregateInputType | true
-    }
-
-  export interface CometsDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
-    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Comets'], meta: { name: 'Comets' } }
-    /**
-     * Find zero or one Comets that matches the filter.
-     * @param {CometsFindUniqueArgs} args - Arguments to find a Comets
-     * @example
-     * // Get one Comets
-     * const comets = await prisma.comets.findUnique({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findUnique<T extends CometsFindUniqueArgs>(args: SelectSubset<T, CometsFindUniqueArgs<ExtArgs>>): Prisma__CometsClient<$Result.GetResult<Prisma.$CometsPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
-
-    /**
-     * Find one Comets that matches the filter or throw an error with `error.code='P2025'` 
-     * if no matches were found.
-     * @param {CometsFindUniqueOrThrowArgs} args - Arguments to find a Comets
-     * @example
-     * // Get one Comets
-     * const comets = await prisma.comets.findUniqueOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findUniqueOrThrow<T extends CometsFindUniqueOrThrowArgs>(args: SelectSubset<T, CometsFindUniqueOrThrowArgs<ExtArgs>>): Prisma__CometsClient<$Result.GetResult<Prisma.$CometsPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
-
-    /**
-     * Find the first Comets that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {CometsFindFirstArgs} args - Arguments to find a Comets
-     * @example
-     * // Get one Comets
-     * const comets = await prisma.comets.findFirst({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findFirst<T extends CometsFindFirstArgs>(args?: SelectSubset<T, CometsFindFirstArgs<ExtArgs>>): Prisma__CometsClient<$Result.GetResult<Prisma.$CometsPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
-
-    /**
-     * Find the first Comets that matches the filter or
-     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {CometsFindFirstOrThrowArgs} args - Arguments to find a Comets
-     * @example
-     * // Get one Comets
-     * const comets = await prisma.comets.findFirstOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findFirstOrThrow<T extends CometsFindFirstOrThrowArgs>(args?: SelectSubset<T, CometsFindFirstOrThrowArgs<ExtArgs>>): Prisma__CometsClient<$Result.GetResult<Prisma.$CometsPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
-
-    /**
-     * Find zero or more Comets that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {CometsFindManyArgs} args - Arguments to filter and select certain fields only.
-     * @example
-     * // Get all Comets
-     * const comets = await prisma.comets.findMany()
-     * 
-     * // Get first 10 Comets
-     * const comets = await prisma.comets.findMany({ take: 10 })
-     * 
-     * // Only select the `full_name`
-     * const cometsWithFull_nameOnly = await prisma.comets.findMany({ select: { full_name: true } })
-     * 
-     */
-    findMany<T extends CometsFindManyArgs>(args?: SelectSubset<T, CometsFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CometsPayload<ExtArgs>, T, "findMany">>
-
-    /**
-     * Create a Comets.
-     * @param {CometsCreateArgs} args - Arguments to create a Comets.
-     * @example
-     * // Create one Comets
-     * const Comets = await prisma.comets.create({
-     *   data: {
-     *     // ... data to create a Comets
-     *   }
-     * })
-     * 
-     */
-    create<T extends CometsCreateArgs>(args: SelectSubset<T, CometsCreateArgs<ExtArgs>>): Prisma__CometsClient<$Result.GetResult<Prisma.$CometsPayload<ExtArgs>, T, "create">, never, ExtArgs>
-
-    /**
-     * Create many Comets.
-     * @param {CometsCreateManyArgs} args - Arguments to create many Comets.
-     * @example
-     * // Create many Comets
-     * const comets = await prisma.comets.createMany({
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     *     
-     */
-    createMany<T extends CometsCreateManyArgs>(args?: SelectSubset<T, CometsCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Create many Comets and returns the data saved in the database.
-     * @param {CometsCreateManyAndReturnArgs} args - Arguments to create many Comets.
-     * @example
-     * // Create many Comets
-     * const comets = await prisma.comets.createManyAndReturn({
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * 
-     * // Create many Comets and only return the `full_name`
-     * const cometsWithFull_nameOnly = await prisma.comets.createManyAndReturn({ 
-     *   select: { full_name: true },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * 
-     */
-    createManyAndReturn<T extends CometsCreateManyAndReturnArgs>(args?: SelectSubset<T, CometsCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CometsPayload<ExtArgs>, T, "createManyAndReturn">>
-
-    /**
-     * Delete a Comets.
-     * @param {CometsDeleteArgs} args - Arguments to delete one Comets.
-     * @example
-     * // Delete one Comets
-     * const Comets = await prisma.comets.delete({
-     *   where: {
-     *     // ... filter to delete one Comets
-     *   }
-     * })
-     * 
-     */
-    delete<T extends CometsDeleteArgs>(args: SelectSubset<T, CometsDeleteArgs<ExtArgs>>): Prisma__CometsClient<$Result.GetResult<Prisma.$CometsPayload<ExtArgs>, T, "delete">, never, ExtArgs>
-
-    /**
-     * Update one Comets.
-     * @param {CometsUpdateArgs} args - Arguments to update one Comets.
-     * @example
-     * // Update one Comets
-     * const comets = await prisma.comets.update({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-     */
-    update<T extends CometsUpdateArgs>(args: SelectSubset<T, CometsUpdateArgs<ExtArgs>>): Prisma__CometsClient<$Result.GetResult<Prisma.$CometsPayload<ExtArgs>, T, "update">, never, ExtArgs>
-
-    /**
-     * Delete zero or more Comets.
-     * @param {CometsDeleteManyArgs} args - Arguments to filter Comets to delete.
-     * @example
-     * // Delete a few Comets
-     * const { count } = await prisma.comets.deleteMany({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     * 
-     */
-    deleteMany<T extends CometsDeleteManyArgs>(args?: SelectSubset<T, CometsDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more Comets.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {CometsUpdateManyArgs} args - Arguments to update one or more rows.
-     * @example
-     * // Update many Comets
-     * const comets = await prisma.comets.updateMany({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-     */
-    updateMany<T extends CometsUpdateManyArgs>(args: SelectSubset<T, CometsUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Create or update one Comets.
-     * @param {CometsUpsertArgs} args - Arguments to update or create a Comets.
-     * @example
-     * // Update or create a Comets
-     * const comets = await prisma.comets.upsert({
-     *   create: {
-     *     // ... data to create a Comets
-     *   },
-     *   update: {
-     *     // ... in case it already exists, update
-     *   },
-     *   where: {
-     *     // ... the filter for the Comets we want to update
-     *   }
-     * })
-     */
-    upsert<T extends CometsUpsertArgs>(args: SelectSubset<T, CometsUpsertArgs<ExtArgs>>): Prisma__CometsClient<$Result.GetResult<Prisma.$CometsPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
-
-
-    /**
-     * Count the number of Comets.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {CometsCountArgs} args - Arguments to filter Comets to count.
-     * @example
-     * // Count the number of Comets
-     * const count = await prisma.comets.count({
-     *   where: {
-     *     // ... the filter for the Comets we want to count
-     *   }
-     * })
-    **/
-    count<T extends CometsCountArgs>(
-      args?: Subset<T, CometsCountArgs>,
-    ): Prisma.PrismaPromise<
-      T extends $Utils.Record<'select', any>
-        ? T['select'] extends true
-          ? number
-          : GetScalarType<T['select'], CometsCountAggregateOutputType>
-        : number
-    >
-
-    /**
-     * Allows you to perform aggregations operations on a Comets.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {CometsAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
-     * @example
-     * // Ordered by age ascending
-     * // Where email contains prisma.io
-     * // Limited to the 10 users
-     * const aggregations = await prisma.user.aggregate({
-     *   _avg: {
-     *     age: true,
-     *   },
-     *   where: {
-     *     email: {
-     *       contains: "prisma.io",
-     *     },
-     *   },
-     *   orderBy: {
-     *     age: "asc",
-     *   },
-     *   take: 10,
-     * })
-    **/
-    aggregate<T extends CometsAggregateArgs>(args: Subset<T, CometsAggregateArgs>): Prisma.PrismaPromise<GetCometsAggregateType<T>>
-
-    /**
-     * Group by Comets.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {CometsGroupByArgs} args - Group by arguments.
-     * @example
-     * // Group by city, order by createdAt, get count
-     * const result = await prisma.user.groupBy({
-     *   by: ['city', 'createdAt'],
-     *   orderBy: {
-     *     createdAt: true
-     *   },
-     *   _count: {
-     *     _all: true
-     *   },
-     * })
-     * 
-    **/
-    groupBy<
-      T extends CometsGroupByArgs,
-      HasSelectOrTake extends Or<
-        Extends<'skip', Keys<T>>,
-        Extends<'take', Keys<T>>
-      >,
-      OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: CometsGroupByArgs['orderBy'] }
-        : { orderBy?: CometsGroupByArgs['orderBy'] },
-      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
-      ByFields extends MaybeTupleToUnion<T['by']>,
-      ByValid extends Has<ByFields, OrderFields>,
-      HavingFields extends GetHavingFields<T['having']>,
-      HavingValid extends Has<ByFields, HavingFields>,
-      ByEmpty extends T['by'] extends never[] ? True : False,
-      InputErrors extends ByEmpty extends True
-      ? `Error: "by" must not be empty.`
-      : HavingValid extends False
-      ? {
-          [P in HavingFields]: P extends ByFields
-            ? never
-            : P extends string
-            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
-            : [
-                Error,
-                'Field ',
-                P,
-                ` in "having" needs to be provided in "by"`,
-              ]
-        }[HavingFields]
-      : 'take' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "take", you also need to provide "orderBy"'
-      : 'skip' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "skip", you also need to provide "orderBy"'
-      : ByValid extends True
-      ? {}
-      : {
-          [P in OrderFields]: P extends ByFields
-            ? never
-            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-        }[OrderFields]
-    >(args: SubsetIntersection<T, CometsGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetCometsGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
-  /**
-   * Fields of the Comets model
-   */
-  readonly fields: CometsFieldRefs;
-  }
-
-  /**
-   * The delegate class that acts as a "Promise-like" for Comets.
-   * Why is this prefixed with `Prisma__`?
-   * Because we want to prevent naming conflicts as mentioned in
-   * https://github.com/prisma/prisma-client-js/issues/707
-   */
-  export interface Prisma__CometsClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
-    readonly [Symbol.toStringTag]: "PrismaPromise"
-    /**
-     * Attaches callbacks for the resolution and/or rejection of the Promise.
-     * @param onfulfilled The callback to execute when the Promise is resolved.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of which ever callback is executed.
-     */
-    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
-    /**
-     * Attaches a callback for only the rejection of the Promise.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of the callback.
-     */
-    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
-    /**
-     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
-     * resolved value cannot be modified from the callback.
-     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
-     * @returns A Promise for the completion of the callback.
-     */
-    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
-  }
-
-
-
-
-  /**
-   * Fields of the Comets model
-   */ 
-  interface CometsFieldRefs {
-    readonly full_name: FieldRef<"Comets", 'String'>
-    readonly a: FieldRef<"Comets", 'Float'>
-    readonly e: FieldRef<"Comets", 'Float'>
-    readonly I: FieldRef<"Comets", 'Float'>
-    readonly longNode: FieldRef<"Comets", 'Float'>
-    readonly longPeri: FieldRef<"Comets", 'Float'>
-    readonly q: FieldRef<"Comets", 'Float'>
-    readonly ad: FieldRef<"Comets", 'Float'>
-    readonly per_y: FieldRef<"Comets", 'Float'>
-    readonly data_arc: FieldRef<"Comets", 'Float'>
-    readonly condition_code: FieldRef<"Comets", 'Float'>
-    readonly n_obs_used: FieldRef<"Comets", 'Float'>
-    readonly H: FieldRef<"Comets", 'Float'>
-    readonly pha: FieldRef<"Comets", 'Float'>
-  }
-    
-
-  // Custom InputTypes
-  /**
-   * Comets findUnique
-   */
-  export type CometsFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Comets
-     */
-    select?: CometsSelect<ExtArgs> | null
-    /**
-     * Filter, which Comets to fetch.
-     */
-    where: CometsWhereUniqueInput
-  }
-
-  /**
-   * Comets findUniqueOrThrow
-   */
-  export type CometsFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Comets
-     */
-    select?: CometsSelect<ExtArgs> | null
-    /**
-     * Filter, which Comets to fetch.
-     */
-    where: CometsWhereUniqueInput
-  }
-
-  /**
-   * Comets findFirst
-   */
-  export type CometsFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Comets
-     */
-    select?: CometsSelect<ExtArgs> | null
-    /**
-     * Filter, which Comets to fetch.
-     */
-    where?: CometsWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of Comets to fetch.
-     */
-    orderBy?: CometsOrderByWithRelationInput | CometsOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for Comets.
-     */
-    cursor?: CometsWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` Comets from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` Comets.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of Comets.
-     */
-    distinct?: CometsScalarFieldEnum | CometsScalarFieldEnum[]
-  }
-
-  /**
-   * Comets findFirstOrThrow
-   */
-  export type CometsFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Comets
-     */
-    select?: CometsSelect<ExtArgs> | null
-    /**
-     * Filter, which Comets to fetch.
-     */
-    where?: CometsWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of Comets to fetch.
-     */
-    orderBy?: CometsOrderByWithRelationInput | CometsOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for Comets.
-     */
-    cursor?: CometsWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` Comets from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` Comets.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of Comets.
-     */
-    distinct?: CometsScalarFieldEnum | CometsScalarFieldEnum[]
-  }
-
-  /**
-   * Comets findMany
-   */
-  export type CometsFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Comets
-     */
-    select?: CometsSelect<ExtArgs> | null
-    /**
-     * Filter, which Comets to fetch.
-     */
-    where?: CometsWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of Comets to fetch.
-     */
-    orderBy?: CometsOrderByWithRelationInput | CometsOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for listing Comets.
-     */
-    cursor?: CometsWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` Comets from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` Comets.
-     */
-    skip?: number
-    distinct?: CometsScalarFieldEnum | CometsScalarFieldEnum[]
-  }
-
-  /**
-   * Comets create
-   */
-  export type CometsCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Comets
-     */
-    select?: CometsSelect<ExtArgs> | null
-    /**
-     * The data needed to create a Comets.
-     */
-    data: XOR<CometsCreateInput, CometsUncheckedCreateInput>
-  }
-
-  /**
-   * Comets createMany
-   */
-  export type CometsCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * The data used to create many Comets.
-     */
-    data: CometsCreateManyInput | CometsCreateManyInput[]
-  }
-
-  /**
-   * Comets createManyAndReturn
-   */
-  export type CometsCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Comets
-     */
-    select?: CometsSelectCreateManyAndReturn<ExtArgs> | null
-    /**
-     * The data used to create many Comets.
-     */
-    data: CometsCreateManyInput | CometsCreateManyInput[]
-  }
-
-  /**
-   * Comets update
-   */
-  export type CometsUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Comets
-     */
-    select?: CometsSelect<ExtArgs> | null
-    /**
-     * The data needed to update a Comets.
-     */
-    data: XOR<CometsUpdateInput, CometsUncheckedUpdateInput>
-    /**
-     * Choose, which Comets to update.
-     */
-    where: CometsWhereUniqueInput
-  }
-
-  /**
-   * Comets updateMany
-   */
-  export type CometsUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * The data used to update Comets.
-     */
-    data: XOR<CometsUpdateManyMutationInput, CometsUncheckedUpdateManyInput>
-    /**
-     * Filter which Comets to update
-     */
-    where?: CometsWhereInput
-  }
-
-  /**
-   * Comets upsert
-   */
-  export type CometsUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Comets
-     */
-    select?: CometsSelect<ExtArgs> | null
-    /**
-     * The filter to search for the Comets to update in case it exists.
-     */
-    where: CometsWhereUniqueInput
-    /**
-     * In case the Comets found by the `where` argument doesn't exist, create a new Comets with this data.
-     */
-    create: XOR<CometsCreateInput, CometsUncheckedCreateInput>
-    /**
-     * In case the Comets was found with the provided `where` argument, update it with this data.
-     */
-    update: XOR<CometsUpdateInput, CometsUncheckedUpdateInput>
-  }
-
-  /**
-   * Comets delete
-   */
-  export type CometsDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Comets
-     */
-    select?: CometsSelect<ExtArgs> | null
-    /**
-     * Filter which Comets to delete.
-     */
-    where: CometsWhereUniqueInput
-  }
-
-  /**
-   * Comets deleteMany
-   */
-  export type CometsDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Filter which Comets to delete
-     */
-    where?: CometsWhereInput
-  }
-
-  /**
-   * Comets without action
-   */
-  export type CometsDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Comets
-     */
-    select?: CometsSelect<ExtArgs> | null
   }
 
 
@@ -4177,39 +2957,15 @@ export namespace Prisma {
     a: 'a',
     e: 'e',
     I: 'I',
-    longNode: 'longNode',
+    L: 'L',
     longPeri: 'longPeri',
-    q: 'q',
-    ad: 'ad',
-    per_y: 'per_y',
-    data_arc: 'data_arc',
-    condition_code: 'condition_code',
-    n_obs_used: 'n_obs_used',
+    longNode: 'longNode',
+    size: 'size',
     H: 'H',
     pha: 'pha'
   };
 
   export type AsteroidsScalarFieldEnum = (typeof AsteroidsScalarFieldEnum)[keyof typeof AsteroidsScalarFieldEnum]
-
-
-  export const CometsScalarFieldEnum: {
-    full_name: 'full_name',
-    a: 'a',
-    e: 'e',
-    I: 'I',
-    longNode: 'longNode',
-    longPeri: 'longPeri',
-    q: 'q',
-    ad: 'ad',
-    per_y: 'per_y',
-    data_arc: 'data_arc',
-    condition_code: 'condition_code',
-    n_obs_used: 'n_obs_used',
-    H: 'H',
-    pha: 'pha'
-  };
-
-  export type CometsScalarFieldEnum = (typeof CometsScalarFieldEnum)[keyof typeof CometsScalarFieldEnum]
 
 
   export const PlanetsScalarFieldEnum: {
@@ -4274,16 +3030,12 @@ export namespace Prisma {
     a?: FloatFilter<"Asteroids"> | number
     e?: FloatFilter<"Asteroids"> | number
     I?: FloatFilter<"Asteroids"> | number
-    longNode?: FloatFilter<"Asteroids"> | number
+    L?: FloatFilter<"Asteroids"> | number
     longPeri?: FloatFilter<"Asteroids"> | number
-    q?: FloatFilter<"Asteroids"> | number
-    ad?: FloatFilter<"Asteroids"> | number
-    per_y?: FloatFilter<"Asteroids"> | number
-    data_arc?: FloatFilter<"Asteroids"> | number
-    condition_code?: FloatFilter<"Asteroids"> | number
-    n_obs_used?: FloatFilter<"Asteroids"> | number
+    longNode?: FloatFilter<"Asteroids"> | number
+    size?: FloatFilter<"Asteroids"> | number
     H?: FloatFilter<"Asteroids"> | number
-    pha?: FloatFilter<"Asteroids"> | number
+    pha?: StringFilter<"Asteroids"> | string
   }
 
   export type AsteroidsOrderByWithRelationInput = {
@@ -4291,14 +3043,10 @@ export namespace Prisma {
     a?: SortOrder
     e?: SortOrder
     I?: SortOrder
-    longNode?: SortOrder
+    L?: SortOrder
     longPeri?: SortOrder
-    q?: SortOrder
-    ad?: SortOrder
-    per_y?: SortOrder
-    data_arc?: SortOrder
-    condition_code?: SortOrder
-    n_obs_used?: SortOrder
+    longNode?: SortOrder
+    size?: SortOrder
     H?: SortOrder
     pha?: SortOrder
   }
@@ -4311,16 +3059,12 @@ export namespace Prisma {
     a?: FloatFilter<"Asteroids"> | number
     e?: FloatFilter<"Asteroids"> | number
     I?: FloatFilter<"Asteroids"> | number
-    longNode?: FloatFilter<"Asteroids"> | number
+    L?: FloatFilter<"Asteroids"> | number
     longPeri?: FloatFilter<"Asteroids"> | number
-    q?: FloatFilter<"Asteroids"> | number
-    ad?: FloatFilter<"Asteroids"> | number
-    per_y?: FloatFilter<"Asteroids"> | number
-    data_arc?: FloatFilter<"Asteroids"> | number
-    condition_code?: FloatFilter<"Asteroids"> | number
-    n_obs_used?: FloatFilter<"Asteroids"> | number
+    longNode?: FloatFilter<"Asteroids"> | number
+    size?: FloatFilter<"Asteroids"> | number
     H?: FloatFilter<"Asteroids"> | number
-    pha?: FloatFilter<"Asteroids"> | number
+    pha?: StringFilter<"Asteroids"> | string
   }, "full_name">
 
   export type AsteroidsOrderByWithAggregationInput = {
@@ -4328,14 +3072,10 @@ export namespace Prisma {
     a?: SortOrder
     e?: SortOrder
     I?: SortOrder
-    longNode?: SortOrder
+    L?: SortOrder
     longPeri?: SortOrder
-    q?: SortOrder
-    ad?: SortOrder
-    per_y?: SortOrder
-    data_arc?: SortOrder
-    condition_code?: SortOrder
-    n_obs_used?: SortOrder
+    longNode?: SortOrder
+    size?: SortOrder
     H?: SortOrder
     pha?: SortOrder
     _count?: AsteroidsCountOrderByAggregateInput
@@ -4353,115 +3093,12 @@ export namespace Prisma {
     a?: FloatWithAggregatesFilter<"Asteroids"> | number
     e?: FloatWithAggregatesFilter<"Asteroids"> | number
     I?: FloatWithAggregatesFilter<"Asteroids"> | number
-    longNode?: FloatWithAggregatesFilter<"Asteroids"> | number
+    L?: FloatWithAggregatesFilter<"Asteroids"> | number
     longPeri?: FloatWithAggregatesFilter<"Asteroids"> | number
-    q?: FloatWithAggregatesFilter<"Asteroids"> | number
-    ad?: FloatWithAggregatesFilter<"Asteroids"> | number
-    per_y?: FloatWithAggregatesFilter<"Asteroids"> | number
-    data_arc?: FloatWithAggregatesFilter<"Asteroids"> | number
-    condition_code?: FloatWithAggregatesFilter<"Asteroids"> | number
-    n_obs_used?: FloatWithAggregatesFilter<"Asteroids"> | number
+    longNode?: FloatWithAggregatesFilter<"Asteroids"> | number
+    size?: FloatWithAggregatesFilter<"Asteroids"> | number
     H?: FloatWithAggregatesFilter<"Asteroids"> | number
-    pha?: FloatWithAggregatesFilter<"Asteroids"> | number
-  }
-
-  export type CometsWhereInput = {
-    AND?: CometsWhereInput | CometsWhereInput[]
-    OR?: CometsWhereInput[]
-    NOT?: CometsWhereInput | CometsWhereInput[]
-    full_name?: StringFilter<"Comets"> | string
-    a?: FloatFilter<"Comets"> | number
-    e?: FloatFilter<"Comets"> | number
-    I?: FloatFilter<"Comets"> | number
-    longNode?: FloatFilter<"Comets"> | number
-    longPeri?: FloatFilter<"Comets"> | number
-    q?: FloatFilter<"Comets"> | number
-    ad?: FloatFilter<"Comets"> | number
-    per_y?: FloatFilter<"Comets"> | number
-    data_arc?: FloatFilter<"Comets"> | number
-    condition_code?: FloatFilter<"Comets"> | number
-    n_obs_used?: FloatFilter<"Comets"> | number
-    H?: FloatFilter<"Comets"> | number
-    pha?: FloatFilter<"Comets"> | number
-  }
-
-  export type CometsOrderByWithRelationInput = {
-    full_name?: SortOrder
-    a?: SortOrder
-    e?: SortOrder
-    I?: SortOrder
-    longNode?: SortOrder
-    longPeri?: SortOrder
-    q?: SortOrder
-    ad?: SortOrder
-    per_y?: SortOrder
-    data_arc?: SortOrder
-    condition_code?: SortOrder
-    n_obs_used?: SortOrder
-    H?: SortOrder
-    pha?: SortOrder
-  }
-
-  export type CometsWhereUniqueInput = Prisma.AtLeast<{
-    full_name?: string
-    AND?: CometsWhereInput | CometsWhereInput[]
-    OR?: CometsWhereInput[]
-    NOT?: CometsWhereInput | CometsWhereInput[]
-    a?: FloatFilter<"Comets"> | number
-    e?: FloatFilter<"Comets"> | number
-    I?: FloatFilter<"Comets"> | number
-    longNode?: FloatFilter<"Comets"> | number
-    longPeri?: FloatFilter<"Comets"> | number
-    q?: FloatFilter<"Comets"> | number
-    ad?: FloatFilter<"Comets"> | number
-    per_y?: FloatFilter<"Comets"> | number
-    data_arc?: FloatFilter<"Comets"> | number
-    condition_code?: FloatFilter<"Comets"> | number
-    n_obs_used?: FloatFilter<"Comets"> | number
-    H?: FloatFilter<"Comets"> | number
-    pha?: FloatFilter<"Comets"> | number
-  }, "full_name">
-
-  export type CometsOrderByWithAggregationInput = {
-    full_name?: SortOrder
-    a?: SortOrder
-    e?: SortOrder
-    I?: SortOrder
-    longNode?: SortOrder
-    longPeri?: SortOrder
-    q?: SortOrder
-    ad?: SortOrder
-    per_y?: SortOrder
-    data_arc?: SortOrder
-    condition_code?: SortOrder
-    n_obs_used?: SortOrder
-    H?: SortOrder
-    pha?: SortOrder
-    _count?: CometsCountOrderByAggregateInput
-    _avg?: CometsAvgOrderByAggregateInput
-    _max?: CometsMaxOrderByAggregateInput
-    _min?: CometsMinOrderByAggregateInput
-    _sum?: CometsSumOrderByAggregateInput
-  }
-
-  export type CometsScalarWhereWithAggregatesInput = {
-    AND?: CometsScalarWhereWithAggregatesInput | CometsScalarWhereWithAggregatesInput[]
-    OR?: CometsScalarWhereWithAggregatesInput[]
-    NOT?: CometsScalarWhereWithAggregatesInput | CometsScalarWhereWithAggregatesInput[]
-    full_name?: StringWithAggregatesFilter<"Comets"> | string
-    a?: FloatWithAggregatesFilter<"Comets"> | number
-    e?: FloatWithAggregatesFilter<"Comets"> | number
-    I?: FloatWithAggregatesFilter<"Comets"> | number
-    longNode?: FloatWithAggregatesFilter<"Comets"> | number
-    longPeri?: FloatWithAggregatesFilter<"Comets"> | number
-    q?: FloatWithAggregatesFilter<"Comets"> | number
-    ad?: FloatWithAggregatesFilter<"Comets"> | number
-    per_y?: FloatWithAggregatesFilter<"Comets"> | number
-    data_arc?: FloatWithAggregatesFilter<"Comets"> | number
-    condition_code?: FloatWithAggregatesFilter<"Comets"> | number
-    n_obs_used?: FloatWithAggregatesFilter<"Comets"> | number
-    H?: FloatWithAggregatesFilter<"Comets"> | number
-    pha?: FloatWithAggregatesFilter<"Comets"> | number
+    pha?: StringWithAggregatesFilter<"Asteroids"> | string
   }
 
   export type PlanetsWhereInput = {
@@ -4553,16 +3190,12 @@ export namespace Prisma {
     a: number
     e: number
     I: number
-    longNode: number
+    L: number
     longPeri: number
-    q: number
-    ad: number
-    per_y: number
-    data_arc: number
-    condition_code: number
-    n_obs_used: number
+    longNode: number
+    size: number
     H: number
-    pha: number
+    pha: string
   }
 
   export type AsteroidsUncheckedCreateInput = {
@@ -4570,16 +3203,12 @@ export namespace Prisma {
     a: number
     e: number
     I: number
-    longNode: number
+    L: number
     longPeri: number
-    q: number
-    ad: number
-    per_y: number
-    data_arc: number
-    condition_code: number
-    n_obs_used: number
+    longNode: number
+    size: number
     H: number
-    pha: number
+    pha: string
   }
 
   export type AsteroidsUpdateInput = {
@@ -4587,16 +3216,12 @@ export namespace Prisma {
     a?: FloatFieldUpdateOperationsInput | number
     e?: FloatFieldUpdateOperationsInput | number
     I?: FloatFieldUpdateOperationsInput | number
-    longNode?: FloatFieldUpdateOperationsInput | number
+    L?: FloatFieldUpdateOperationsInput | number
     longPeri?: FloatFieldUpdateOperationsInput | number
-    q?: FloatFieldUpdateOperationsInput | number
-    ad?: FloatFieldUpdateOperationsInput | number
-    per_y?: FloatFieldUpdateOperationsInput | number
-    data_arc?: FloatFieldUpdateOperationsInput | number
-    condition_code?: FloatFieldUpdateOperationsInput | number
-    n_obs_used?: FloatFieldUpdateOperationsInput | number
+    longNode?: FloatFieldUpdateOperationsInput | number
+    size?: FloatFieldUpdateOperationsInput | number
     H?: FloatFieldUpdateOperationsInput | number
-    pha?: FloatFieldUpdateOperationsInput | number
+    pha?: StringFieldUpdateOperationsInput | string
   }
 
   export type AsteroidsUncheckedUpdateInput = {
@@ -4604,16 +3229,12 @@ export namespace Prisma {
     a?: FloatFieldUpdateOperationsInput | number
     e?: FloatFieldUpdateOperationsInput | number
     I?: FloatFieldUpdateOperationsInput | number
-    longNode?: FloatFieldUpdateOperationsInput | number
+    L?: FloatFieldUpdateOperationsInput | number
     longPeri?: FloatFieldUpdateOperationsInput | number
-    q?: FloatFieldUpdateOperationsInput | number
-    ad?: FloatFieldUpdateOperationsInput | number
-    per_y?: FloatFieldUpdateOperationsInput | number
-    data_arc?: FloatFieldUpdateOperationsInput | number
-    condition_code?: FloatFieldUpdateOperationsInput | number
-    n_obs_used?: FloatFieldUpdateOperationsInput | number
+    longNode?: FloatFieldUpdateOperationsInput | number
+    size?: FloatFieldUpdateOperationsInput | number
     H?: FloatFieldUpdateOperationsInput | number
-    pha?: FloatFieldUpdateOperationsInput | number
+    pha?: StringFieldUpdateOperationsInput | string
   }
 
   export type AsteroidsCreateManyInput = {
@@ -4621,16 +3242,12 @@ export namespace Prisma {
     a: number
     e: number
     I: number
-    longNode: number
+    L: number
     longPeri: number
-    q: number
-    ad: number
-    per_y: number
-    data_arc: number
-    condition_code: number
-    n_obs_used: number
+    longNode: number
+    size: number
     H: number
-    pha: number
+    pha: string
   }
 
   export type AsteroidsUpdateManyMutationInput = {
@@ -4638,16 +3255,12 @@ export namespace Prisma {
     a?: FloatFieldUpdateOperationsInput | number
     e?: FloatFieldUpdateOperationsInput | number
     I?: FloatFieldUpdateOperationsInput | number
-    longNode?: FloatFieldUpdateOperationsInput | number
+    L?: FloatFieldUpdateOperationsInput | number
     longPeri?: FloatFieldUpdateOperationsInput | number
-    q?: FloatFieldUpdateOperationsInput | number
-    ad?: FloatFieldUpdateOperationsInput | number
-    per_y?: FloatFieldUpdateOperationsInput | number
-    data_arc?: FloatFieldUpdateOperationsInput | number
-    condition_code?: FloatFieldUpdateOperationsInput | number
-    n_obs_used?: FloatFieldUpdateOperationsInput | number
+    longNode?: FloatFieldUpdateOperationsInput | number
+    size?: FloatFieldUpdateOperationsInput | number
     H?: FloatFieldUpdateOperationsInput | number
-    pha?: FloatFieldUpdateOperationsInput | number
+    pha?: StringFieldUpdateOperationsInput | string
   }
 
   export type AsteroidsUncheckedUpdateManyInput = {
@@ -4655,135 +3268,12 @@ export namespace Prisma {
     a?: FloatFieldUpdateOperationsInput | number
     e?: FloatFieldUpdateOperationsInput | number
     I?: FloatFieldUpdateOperationsInput | number
-    longNode?: FloatFieldUpdateOperationsInput | number
+    L?: FloatFieldUpdateOperationsInput | number
     longPeri?: FloatFieldUpdateOperationsInput | number
-    q?: FloatFieldUpdateOperationsInput | number
-    ad?: FloatFieldUpdateOperationsInput | number
-    per_y?: FloatFieldUpdateOperationsInput | number
-    data_arc?: FloatFieldUpdateOperationsInput | number
-    condition_code?: FloatFieldUpdateOperationsInput | number
-    n_obs_used?: FloatFieldUpdateOperationsInput | number
-    H?: FloatFieldUpdateOperationsInput | number
-    pha?: FloatFieldUpdateOperationsInput | number
-  }
-
-  export type CometsCreateInput = {
-    full_name: string
-    a: number
-    e: number
-    I: number
-    longNode: number
-    longPeri: number
-    q: number
-    ad: number
-    per_y: number
-    data_arc: number
-    condition_code: number
-    n_obs_used: number
-    H: number
-    pha: number
-  }
-
-  export type CometsUncheckedCreateInput = {
-    full_name: string
-    a: number
-    e: number
-    I: number
-    longNode: number
-    longPeri: number
-    q: number
-    ad: number
-    per_y: number
-    data_arc: number
-    condition_code: number
-    n_obs_used: number
-    H: number
-    pha: number
-  }
-
-  export type CometsUpdateInput = {
-    full_name?: StringFieldUpdateOperationsInput | string
-    a?: FloatFieldUpdateOperationsInput | number
-    e?: FloatFieldUpdateOperationsInput | number
-    I?: FloatFieldUpdateOperationsInput | number
     longNode?: FloatFieldUpdateOperationsInput | number
-    longPeri?: FloatFieldUpdateOperationsInput | number
-    q?: FloatFieldUpdateOperationsInput | number
-    ad?: FloatFieldUpdateOperationsInput | number
-    per_y?: FloatFieldUpdateOperationsInput | number
-    data_arc?: FloatFieldUpdateOperationsInput | number
-    condition_code?: FloatFieldUpdateOperationsInput | number
-    n_obs_used?: FloatFieldUpdateOperationsInput | number
+    size?: FloatFieldUpdateOperationsInput | number
     H?: FloatFieldUpdateOperationsInput | number
-    pha?: FloatFieldUpdateOperationsInput | number
-  }
-
-  export type CometsUncheckedUpdateInput = {
-    full_name?: StringFieldUpdateOperationsInput | string
-    a?: FloatFieldUpdateOperationsInput | number
-    e?: FloatFieldUpdateOperationsInput | number
-    I?: FloatFieldUpdateOperationsInput | number
-    longNode?: FloatFieldUpdateOperationsInput | number
-    longPeri?: FloatFieldUpdateOperationsInput | number
-    q?: FloatFieldUpdateOperationsInput | number
-    ad?: FloatFieldUpdateOperationsInput | number
-    per_y?: FloatFieldUpdateOperationsInput | number
-    data_arc?: FloatFieldUpdateOperationsInput | number
-    condition_code?: FloatFieldUpdateOperationsInput | number
-    n_obs_used?: FloatFieldUpdateOperationsInput | number
-    H?: FloatFieldUpdateOperationsInput | number
-    pha?: FloatFieldUpdateOperationsInput | number
-  }
-
-  export type CometsCreateManyInput = {
-    full_name: string
-    a: number
-    e: number
-    I: number
-    longNode: number
-    longPeri: number
-    q: number
-    ad: number
-    per_y: number
-    data_arc: number
-    condition_code: number
-    n_obs_used: number
-    H: number
-    pha: number
-  }
-
-  export type CometsUpdateManyMutationInput = {
-    full_name?: StringFieldUpdateOperationsInput | string
-    a?: FloatFieldUpdateOperationsInput | number
-    e?: FloatFieldUpdateOperationsInput | number
-    I?: FloatFieldUpdateOperationsInput | number
-    longNode?: FloatFieldUpdateOperationsInput | number
-    longPeri?: FloatFieldUpdateOperationsInput | number
-    q?: FloatFieldUpdateOperationsInput | number
-    ad?: FloatFieldUpdateOperationsInput | number
-    per_y?: FloatFieldUpdateOperationsInput | number
-    data_arc?: FloatFieldUpdateOperationsInput | number
-    condition_code?: FloatFieldUpdateOperationsInput | number
-    n_obs_used?: FloatFieldUpdateOperationsInput | number
-    H?: FloatFieldUpdateOperationsInput | number
-    pha?: FloatFieldUpdateOperationsInput | number
-  }
-
-  export type CometsUncheckedUpdateManyInput = {
-    full_name?: StringFieldUpdateOperationsInput | string
-    a?: FloatFieldUpdateOperationsInput | number
-    e?: FloatFieldUpdateOperationsInput | number
-    I?: FloatFieldUpdateOperationsInput | number
-    longNode?: FloatFieldUpdateOperationsInput | number
-    longPeri?: FloatFieldUpdateOperationsInput | number
-    q?: FloatFieldUpdateOperationsInput | number
-    ad?: FloatFieldUpdateOperationsInput | number
-    per_y?: FloatFieldUpdateOperationsInput | number
-    data_arc?: FloatFieldUpdateOperationsInput | number
-    condition_code?: FloatFieldUpdateOperationsInput | number
-    n_obs_used?: FloatFieldUpdateOperationsInput | number
-    H?: FloatFieldUpdateOperationsInput | number
-    pha?: FloatFieldUpdateOperationsInput | number
+    pha?: StringFieldUpdateOperationsInput | string
   }
 
   export type PlanetsCreateInput = {
@@ -4914,14 +3404,10 @@ export namespace Prisma {
     a?: SortOrder
     e?: SortOrder
     I?: SortOrder
-    longNode?: SortOrder
+    L?: SortOrder
     longPeri?: SortOrder
-    q?: SortOrder
-    ad?: SortOrder
-    per_y?: SortOrder
-    data_arc?: SortOrder
-    condition_code?: SortOrder
-    n_obs_used?: SortOrder
+    longNode?: SortOrder
+    size?: SortOrder
     H?: SortOrder
     pha?: SortOrder
   }
@@ -4930,16 +3416,11 @@ export namespace Prisma {
     a?: SortOrder
     e?: SortOrder
     I?: SortOrder
-    longNode?: SortOrder
+    L?: SortOrder
     longPeri?: SortOrder
-    q?: SortOrder
-    ad?: SortOrder
-    per_y?: SortOrder
-    data_arc?: SortOrder
-    condition_code?: SortOrder
-    n_obs_used?: SortOrder
+    longNode?: SortOrder
+    size?: SortOrder
     H?: SortOrder
-    pha?: SortOrder
   }
 
   export type AsteroidsMaxOrderByAggregateInput = {
@@ -4947,14 +3428,10 @@ export namespace Prisma {
     a?: SortOrder
     e?: SortOrder
     I?: SortOrder
-    longNode?: SortOrder
+    L?: SortOrder
     longPeri?: SortOrder
-    q?: SortOrder
-    ad?: SortOrder
-    per_y?: SortOrder
-    data_arc?: SortOrder
-    condition_code?: SortOrder
-    n_obs_used?: SortOrder
+    longNode?: SortOrder
+    size?: SortOrder
     H?: SortOrder
     pha?: SortOrder
   }
@@ -4964,14 +3441,10 @@ export namespace Prisma {
     a?: SortOrder
     e?: SortOrder
     I?: SortOrder
-    longNode?: SortOrder
+    L?: SortOrder
     longPeri?: SortOrder
-    q?: SortOrder
-    ad?: SortOrder
-    per_y?: SortOrder
-    data_arc?: SortOrder
-    condition_code?: SortOrder
-    n_obs_used?: SortOrder
+    longNode?: SortOrder
+    size?: SortOrder
     H?: SortOrder
     pha?: SortOrder
   }
@@ -4980,16 +3453,11 @@ export namespace Prisma {
     a?: SortOrder
     e?: SortOrder
     I?: SortOrder
-    longNode?: SortOrder
+    L?: SortOrder
     longPeri?: SortOrder
-    q?: SortOrder
-    ad?: SortOrder
-    per_y?: SortOrder
-    data_arc?: SortOrder
-    condition_code?: SortOrder
-    n_obs_used?: SortOrder
+    longNode?: SortOrder
+    size?: SortOrder
     H?: SortOrder
-    pha?: SortOrder
   }
 
   export type StringWithAggregatesFilter<$PrismaModel = never> = {
@@ -5023,89 +3491,6 @@ export namespace Prisma {
     _sum?: NestedFloatFilter<$PrismaModel>
     _min?: NestedFloatFilter<$PrismaModel>
     _max?: NestedFloatFilter<$PrismaModel>
-  }
-
-  export type CometsCountOrderByAggregateInput = {
-    full_name?: SortOrder
-    a?: SortOrder
-    e?: SortOrder
-    I?: SortOrder
-    longNode?: SortOrder
-    longPeri?: SortOrder
-    q?: SortOrder
-    ad?: SortOrder
-    per_y?: SortOrder
-    data_arc?: SortOrder
-    condition_code?: SortOrder
-    n_obs_used?: SortOrder
-    H?: SortOrder
-    pha?: SortOrder
-  }
-
-  export type CometsAvgOrderByAggregateInput = {
-    a?: SortOrder
-    e?: SortOrder
-    I?: SortOrder
-    longNode?: SortOrder
-    longPeri?: SortOrder
-    q?: SortOrder
-    ad?: SortOrder
-    per_y?: SortOrder
-    data_arc?: SortOrder
-    condition_code?: SortOrder
-    n_obs_used?: SortOrder
-    H?: SortOrder
-    pha?: SortOrder
-  }
-
-  export type CometsMaxOrderByAggregateInput = {
-    full_name?: SortOrder
-    a?: SortOrder
-    e?: SortOrder
-    I?: SortOrder
-    longNode?: SortOrder
-    longPeri?: SortOrder
-    q?: SortOrder
-    ad?: SortOrder
-    per_y?: SortOrder
-    data_arc?: SortOrder
-    condition_code?: SortOrder
-    n_obs_used?: SortOrder
-    H?: SortOrder
-    pha?: SortOrder
-  }
-
-  export type CometsMinOrderByAggregateInput = {
-    full_name?: SortOrder
-    a?: SortOrder
-    e?: SortOrder
-    I?: SortOrder
-    longNode?: SortOrder
-    longPeri?: SortOrder
-    q?: SortOrder
-    ad?: SortOrder
-    per_y?: SortOrder
-    data_arc?: SortOrder
-    condition_code?: SortOrder
-    n_obs_used?: SortOrder
-    H?: SortOrder
-    pha?: SortOrder
-  }
-
-  export type CometsSumOrderByAggregateInput = {
-    a?: SortOrder
-    e?: SortOrder
-    I?: SortOrder
-    longNode?: SortOrder
-    longPeri?: SortOrder
-    q?: SortOrder
-    ad?: SortOrder
-    per_y?: SortOrder
-    data_arc?: SortOrder
-    condition_code?: SortOrder
-    n_obs_used?: SortOrder
-    H?: SortOrder
-    pha?: SortOrder
   }
 
   export type PlanetsCountOrderByAggregateInput = {
@@ -5264,10 +3649,6 @@ export namespace Prisma {
      * @deprecated Use AsteroidsDefaultArgs instead
      */
     export type AsteroidsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = AsteroidsDefaultArgs<ExtArgs>
-    /**
-     * @deprecated Use CometsDefaultArgs instead
-     */
-    export type CometsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = CometsDefaultArgs<ExtArgs>
     /**
      * @deprecated Use PlanetsDefaultArgs instead
      */

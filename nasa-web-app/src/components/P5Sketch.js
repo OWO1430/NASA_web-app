@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import p5 from 'p5';
 // import 'p5/lib/addons/p5.dom';
 import { or } from 'three/webgpu';
+import { Tube } from '@react-three/drei';
 
 const sunRadius = 696340 * 10 ** -5;
 const sunRS = 0.001;
@@ -19,62 +20,228 @@ let sensitivity = 0.002;
 
 let bgTex, sunTex, earthTex;
 
+class Planet {
+  constructor(
+    p,
+    name,
+    a,
+    e,
+    I,
+    L,
+    longPeri,
+    longNode,
+    size,
+    tex,
+    axialTilt,
+    rotationPeriod
+  ) {
+    this.p = p;
+    this.name = name;
+    this.a = a * 149597870.7 * 1e-5; // semi-major axis in p5 units
+    this.e = e; // eccentricity
+    this.I = this.p.radians(I); // inclination in radians
+    this.L = this.p.radians(L); // mean longitude in radians
+    this.longPeri = this.p.radians(longPeri); // longitude of perihelion in radians
+    this.longNode = this.p.radians(longNode); // longitude of ascending node in radians
+    this.size = size * 1e-3; // size of the planet in p5 units
+    this.tex = tex; // texture for the planet
+    this.axialTilt = this.p.radians(axialTilt); // axial tilt
+    this.rotationPeriod = rotationPeriod;
+    this.x = 0;
+    this.y = 0;
+    this.z = 0;
+    this.rot = 0;
+  }
+
+  // planet evolution
+  evolution(time) {
+    // Calculate mean anomaly M = L - longPeri
+    let M =
+      this.L + (time * this.p.TWO_PI) / 365.25 - this.longPeri;
+
+    // Solve Kepler's equation for eccentric anomaly E
+    let E = M;
+    for (let i = 0; i < 5; i++) {
+      E = M + this.e * this.p.sin(E);
+    }
+
+    // Calculate true anomaly
+    let trueAnomaly =
+      2 *
+      this.p.atan(
+        this.p.sqrt((1 + this.e) / (1 - this.e)) *
+        this.p.tan(E / 2)
+      );
+
+    // Calculate distance r = a * (1 - e^2) / (1 + e * cos(trueAnomaly))
+    let r =
+      (this.a * (1 - this.e * this.e)) /
+      (1 + this.e * this.p.cos(trueAnomaly));
+
+    // Convert polar coordinates (r, trueAnomaly) to 3D Cartesian coordinates (x, y, z)
+    this.x =
+      r *
+      (this.p.cos(this.longNode) *
+        this.p.cos(trueAnomaly + this.longPeri) -
+        this.p.sin(this.longNode) *
+        this.p.sin(trueAnomaly + this.longPeri) *
+        this.p.cos(this.I));
+    this.z =
+      r *
+      (this.p.sin(this.longNode) *
+        this.p.cos(trueAnomaly + this.longPeri) +
+        this.p.cos(this.longNode) *
+        this.p.sin(trueAnomaly + this.longPeri) *
+        this.p.cos(this.I));
+    this.y =
+      r *
+      this.p.sin(trueAnomaly + this.longPeri) *
+      this.p.sin(this.I);
+
+    // Calculate rotation for display
+    let angularVelocity =
+      this.p.TWO_PI / this.rotationPeriod; // Angular velocity for daily rotation
+    this.rot += angularVelocity * (timeSpeed / 365.25);
+  }
+
+  // planet orbit
+  drawOrbit() {
+    this.p.noFill();
+    this.p.stroke(255, 100);
+    this.p.strokeWeight(1);
+
+    this.p.beginShape();
+    for (
+      let theta = 0;
+      theta < this.p.TWO_PI;
+      theta += 0.01
+    ) {
+      // Calculate the radial distance r for a given theta in polar coordinates
+      let r =
+        (this.a * (1 - this.e * this.e)) /
+        (1 + this.e * this.p.cos(theta));
+
+      // Convert polar coordinates to 3D Cartesian coordinates
+      let x =
+        r *
+        (this.p.cos(this.longNode) *
+          this.p.cos(theta + this.longPeri) -
+          this.p.sin(this.longNode) *
+          this.p.sin(theta + this.longPeri) *
+          this.p.cos(this.I));
+      let z =
+        r *
+        (this.p.sin(this.longNode) *
+          this.p.cos(theta + this.longPeri) +
+          this.p.cos(this.longNode) *
+          this.p.sin(theta + this.longPeri) *
+          this.p.cos(this.I));
+      let y =
+        r *
+        this.p.sin(theta + this.longPeri) *
+        this.p.sin(this.I);
+
+      this.p.vertex(x, y, z);
+    }
+    this.p.endShape(this.p.CLOSE);
+  }
+
+  // show planet
+  show() {
+    this.p.push();
+    this.p.translate(this.x, this.y, this.z);
+    this.p.rotateY(this.rot);
+    this.p.texture(this.tex);
+    this.p.sphere(this.size, 64, 64);
+    //   this
+    this.p.pop();
+  }
+}
+
 const P5Sketch = () => {
   const sketchRef = useRef(null);
   const [minSize, setMinSize] = useState(1000);
   const [fPlanets, setFPlanets] = useState(null);
   const [fAster, setFAster] = useState(null);
+  const [showPlanet, setShowPlanet] = useState(true);
+  const [showAst, setShowAst] = useState(false);
   const [orbitVisible, setOrbitVisible] = useState(true);
   const orbitVisibleRef = useRef(orbitVisible);
+  const [flyingMode, setFlyingMode] = useState(true);
+  const flyingModeRef = useRef(flyingMode);
+
+  const [selectedPlanet, setSelectedPlanet] = useState('');
+  const selectedPlanetRef = useRef(selectedPlanet);
 
   const handleMinSizeChange = (e) => {
     if (e.key === 'Enter') {
       setMinSize(Number(e.target.value));
     }
   };
+
+  const returnToFlyingMode = () => {
+    usingPlanetCamera = false;
+    planetIndex = -1;
+    setFlyingMode((prev) => !prev);
+  };
+
+  useEffect(() => {
+    flyingModeRef.current = flyingMode;
+  }, [flyingMode]);
+
   useEffect(() => {
     orbitVisibleRef.current = orbitVisible;
   }, [orbitVisible]);
 
   useEffect(() => {
+    selectedPlanetRef.current = selectedPlanet;
+  }, [selectedPlanet]);
+
+  useEffect(() => {
     const fetchData = async () => {
-      const p_res = await fetch('/data/planet.json');
-      if (!p_res.ok) {
-        console.error(`Error fetching data: ${p_res.status} ${p_res.statusText}`);
-        return;
+      if (showPlanet) {
+        const p_res = await fetch('/data/planet.json');
+        if (!p_res.ok) {
+          console.error(`Error fetching data: ${p_res.status} ${p_res.statusText}`);
+          return;
+        }
+        var p_data = await p_res.json();
+        var p_data = p_data.filter(e => (
+          e.size > minSize
+        ));
+
+        setFPlanets(p_data);
+      } else {
+        setFPlanets([]);
       }
-      var p_data = await p_res.json();
-      var p_data = p_data.filter(e => (
-        e.size > minSize
-      ));
 
-      setFPlanets(p_data);
-
-      const a_res = await fetch('/data/planet.json');
-      if (!a_res.ok) {
-        console.error(`Error fetching data: ${a_res.status} ${a_res.statusText}`);
-        return;
+      if (showAst) {
+        const a_res = await fetch('/data/WISE_202.json');
+        if (!a_res.ok) {
+          console.error(`Error fetching data: ${a_res.status} ${a_res.statusText}`);
+          return;
+        }
+        var a_data = await a_res.json();
+        var a_data = a_data.filter(e => (
+          e.PHA === 'Y'
+        ));
+        setFAster(a_data);
+      } else {
+        setFAster([]);
       }
-      var a_data = await a_res.json();
-      var a_data = a_data.filter(e => (
-        true
-      ));
 
-      setFAster(a_data);
     };
 
     fetchData();
-  }, [minSize]);
+  }, [minSize, showPlanet, showAst]);
 
   useEffect(() => {
-    if (fPlanets != null) {
-      console.log("get fplanet", fPlanets);
-      console.log('get faster', fAster);
-
+    if (fPlanets != null && fAster != null) {
       // Initialize p5 instance
-      const sketch = (p, orbitVisibleRef) => {
+      const sketch = (p, orbitVisibleRef, selectedPlanetRef, flyingModeRef) => {
         let camPosition;
         let camRotation;
+        let camTarget;
         // let isMousePressed = false;
         // let lastMouseX, lastMouseY;
         let moveSpeed = 0;
@@ -90,6 +257,11 @@ const P5Sketch = () => {
         let time = 0;
         let timeSpeed = 0.0002;
 
+        // Camera Switching
+        let originalCamera, planetCamera;
+        let usingPlanetCamera = false;
+        let planetIndex = -1;
+        let lastSelectedPlanet;
         let sunRadius = 696340 * 1e-5;
         let sunR = 0;
         let sunRS = 0.001;
@@ -97,6 +269,13 @@ const P5Sketch = () => {
         let planetTex = [];
         let planets = [];
         let asteroids = [];
+
+        // HUD
+        let HUDs = [];
+        let HUDposition;
+        let HUDTex;
+        let HUDedge;
+        let hudPanel;
 
         class Planet {
           constructor(
@@ -218,6 +397,17 @@ const P5Sketch = () => {
           sunTex = p.loadImage('/texture/8k_sun.jpg');
           saturnRingTex = p.loadImage('/texture/2k_saturnRing.png');
 
+          let planetTexturePaths = [
+            '/texture/2k_mercury.jpg',
+            '/texture/2k_venus_surface.jpg',
+            '/texture/8k_earth_daymap.jpg',
+            '/texture/2k_mars.jpg',
+            '/texture/2k_jupiter.jpg',
+            '/texture/2k_saturn.jpg',
+            '/texture/2k_uranus.jpg',
+            '/texture/2k_neptune.jpg',
+          ];
+
           fPlanets.forEach((planet) => {
             planetTex.push(p.loadImage(planet.tex));
           });
@@ -261,10 +451,120 @@ const P5Sketch = () => {
           }
         };
 
+        //HUD
+        function HUDset() {
+
+          hudPanel = p.createDiv();
+          hudPanel.style('position', 'absolute');
+          hudPanel.style('left', '70px');
+          hudPanel.style('top', '30%');
+          hudPanel.style('padding', '10px');
+          hudPanel.style('background-color', 'rgba(0, 0, 0, 0.5)');
+          hudPanel.style('color', '#02c002');
+          hudPanel.style('font-family', 'digitialix');
+          hudPanel.style('font-size', '15px');
+          hudPanel.style('border-radius', '5px');
+
+          let cornerDiv10 = p.createDiv();
+          let cornerDiv20 = p.createDiv();
+
+          let cornerDiv11 = p.createDiv();
+          let cornerDiv21 = p.createDiv();
+          let cornerDiv12 = p.createDiv();
+          let cornerDiv22 = p.createDiv();
+          let cornerDiv13 = p.createDiv();
+          let cornerDiv23 = p.createDiv();
+
+          cornerDiv10.style('background-color', '#02c002');
+          cornerDiv10.style('position', 'absolute');
+          cornerDiv20.style('background-color', '#02c002');
+          cornerDiv20.style('position', 'absolute');
+          cornerDiv11.style('background-color', '#02c002');
+          cornerDiv11.style('position', 'absolute');
+          cornerDiv21.style('background-color', '#02c002');
+          cornerDiv21.style('position', 'absolute');
+          cornerDiv12.style('background-color', '#02c002');
+          cornerDiv12.style('position', 'absolute');
+          cornerDiv22.style('background-color', '#02c002');
+          cornerDiv22.style('position', 'absolute');
+          cornerDiv13.style('background-color', '#02c002');
+          cornerDiv13.style('position', 'absolute');
+          cornerDiv23.style('background-color', '#02c002');
+          cornerDiv23.style('position', 'absolute');
+
+          cornerDiv10.style('width', '40px');
+          cornerDiv10.style('height', '3px');
+          cornerDiv10.style('top', '70px');
+          cornerDiv10.style('left', '70px');
+
+          cornerDiv20.style('width', '3px');
+          cornerDiv20.style('height', '40px');
+          cornerDiv20.style('top', '70px');
+          cornerDiv20.style('left', '70px');
+
+          cornerDiv11.style('width', '40px');
+          cornerDiv11.style('height', '3px');
+          cornerDiv11.style('top', '70px');
+          cornerDiv11.style('right', '70px');
+
+          cornerDiv21.style('width', '3px');
+          cornerDiv21.style('height', '40px');
+          cornerDiv21.style('top', '70px');
+          cornerDiv21.style('right', '70px');
+
+          cornerDiv12.style('width', '40px');
+          cornerDiv12.style('height', '3px');
+          cornerDiv12.style('bottom', '70px');
+          cornerDiv12.style('left', '70px');
+
+          cornerDiv22.style('width', '3px');
+          cornerDiv22.style('height', '40px');
+          cornerDiv22.style('bottom', '70px');
+          cornerDiv22.style('left', '70px');
+
+          cornerDiv13.style('width', '40px');
+          cornerDiv13.style('height', '3px');
+          cornerDiv13.style('bottom', '70px');
+          cornerDiv13.style('right', '70px');
+
+          cornerDiv23.style('width', '3px');
+          cornerDiv23.style('height', '40px');
+          cornerDiv23.style('bottom', '70px');
+          cornerDiv23.style('right', '70px');
+
+          let centerCircle = p.createDiv();
+          centerCircle.style('width', '30px');
+          centerCircle.style('height', '30px');
+          centerCircle.style('border', '1px solid #02c002');
+          centerCircle.style('border-radius', '50%');
+          centerCircle.style('position', 'absolute');
+          centerCircle.style('top', '50%');
+          centerCircle.style('left', '50%');
+          centerCircle.style('transform', 'translate(-50%, -50%)');
+
+          let crossVertical = p.createDiv();
+          crossVertical.style('width', '100px');
+          crossVertical.style('height', '1px');
+          crossVertical.style('background-color', '#02c002');
+          crossVertical.style('position', 'absolute');
+          crossVertical.style('top', '50%');
+          crossVertical.style('left', '50%');
+          crossVertical.style('transform', 'translate(-50%, -50%)');
+
+          HUDs = [hudPanel,
+            cornerDiv10, cornerDiv20,
+            cornerDiv11, cornerDiv21,
+            cornerDiv12, cornerDiv22,
+            cornerDiv13, cornerDiv23,
+            centerCircle, crossVertical];
+        }
+
         p.setup = () => {
           p.createCanvas(p.windowWidth, p.windowHeight, p.WEBGL);
           p.noStroke();
           p.textureWrap(p.REPEAT);
+          originalCamera = p.createCamera();
+          planetCamera = p.createCamera();
           camPosition = p.createVector(0, -10, 180);
           camRotation = p.createVector(0, 0, 0);
           loadInfo();
@@ -274,6 +574,10 @@ const P5Sketch = () => {
           let near = 0.1; // 設置近裁剪平面
           let far = 10000; // 設置遠裁剪平面
           p.perspective(fov, aspect, near, far);
+
+          // HUD
+          HUDset();
+
         };
 
         p.draw = () => {
@@ -292,33 +596,55 @@ const P5Sketch = () => {
           p.pop();
 
           p.push();
-          sunR += sunRS;
+          sunR += sunRS * timeSpeed;
           p.translate(0, 0, 0);
           p.rotateY(sunR);
           p.texture(sunTex);
           p.sphere(sunRadius, 128, 128);
           p.pop();
 
-          for (let i = 0; i < planets.length; i++) {
-            planets[i].drawOrbit();
-            planets[i].evolution(time);
-            planets[i].show();
-            if (planets[i].name === 'Saturn') {
-              planets[i].showSaturnRing();
+          for (let planet of planets) {
+            planet.drawOrbit();
+            planet.evolution(time);
+            planet.show();
+            if (planet.name === 'Saturn') {
+              planet.showSaturnRing();
             }
           }
 
-          // NOTE: asteroid
-          // for (let asteroid of asteroids) {
-          //   asteroid.drawOrbit();
-          //   asteroid.evolution(time);
-          //   asteroid.show();
-          // }
+          for (let asteroid of asteroids) {
+            asteroid.drawOrbit();
+            asteroid.evolution(time);
+            asteroid.show();
+          }
 
+          //HUD
+          hudPanel.html(
+            'Position:<br>' +
+            'x: ' + p.round(camPosition.x * 10 ** 2) + '<br>' +
+            'y: ' + p.round(camPosition.y * 10 ** 2) + '<br>' +
+            'z: ' + p.round(camPosition.z * 10 ** 2) + '<br>' +
+            'Speed: ' + (moveSpeed * 100).toFixed(2) + '  ( ' + p.round(moveSpeed * 500, 2) + '% )'
+          );
+
+          if (selectedPlanetRef.current !== lastSelectedPlanet) {
+            lastSelectedPlanet = selectedPlanetRef.current;
+            if (lastSelectedPlanet) {
+              focusOnPlanetByName(lastSelectedPlanet);
+            }
+            else {
+              camPosition = p.createVector(0, -10, 180);
+              camTarget = null;
+            }
+          }
           time += timeSpeed;
         };
 
         function handleKeyboardInput() {
+          if (usingPlanetCamera) {
+            // Skip camera movement if using planet camera
+            return;
+          }
           let forward = p.createVector(0, 0, -1);
           let right = p.createVector(1, 0, 0);
           let rotationMatrix = new p5.Matrix();
@@ -382,23 +708,37 @@ const P5Sketch = () => {
         }
 
         function updateCamera() {
-          let camDir = p.createVector(0, 0, -1);
-          let rotationMatrix = new p5.Matrix();
-          rotationMatrix.rotateY(camRotation.y);
-          rotationMatrix.rotateX(camRotation.x);
-          camDir = applyMatrixToVector(rotationMatrix, camDir);
-          let camTarget = p5.Vector.add(camPosition, camDir);
-          p.camera(
-            camPosition.x,
-            camPosition.y,
-            camPosition.z,
-            camTarget.x,
-            camTarget.y,
-            camTarget.z,
-            0,
-            1,
-            0
-          );
+          if (usingPlanetCamera && planetIndex !== -1) {
+            for (let h of HUDs) {
+              h.style('display', 'none');
+            }
+            p.setCamera(planetCamera);
+            p.orbitControl();
+            timeSpeed = 0;
+          }
+          else {
+            for (let h of HUDs) {
+              h.style('display', 'block');
+            }
+            let camDir = p.createVector(0, 0, -1);
+            let rotationMatrix = new p5.Matrix();
+            rotationMatrix.rotateY(camRotation.y);
+            rotationMatrix.rotateX(camRotation.x);
+            camDir = applyMatrixToVector(rotationMatrix, camDir);
+            let camTarget = p5.Vector.add(camPosition, camDir);
+            p.camera(
+              camPosition.x,
+              camPosition.y,
+              camPosition.z,
+              camTarget.x,
+              camTarget.y,
+              camTarget.z,
+              0,
+              1,
+              0
+            );
+            timeSpeed = 0.0002;
+          }
         }
 
         function applyMatrixToVector(matrix, vector) {
@@ -412,7 +752,6 @@ const P5Sketch = () => {
           );
           return result;
         }
-
         function checkCollision(newPosition) {
           for (let planet of planets) {
             let distance = p5.Vector.dist(newPosition, p.createVector(planet.x, planet.y, planet.z));
@@ -423,17 +762,6 @@ const P5Sketch = () => {
               return true;
             }
           }
-
-          for (let asteroid of asteroids) {
-            let distance = p5.Vector.dist(newPosition, p.createVector(asteroid.x, asteroid.y, asteroid.z));
-            let minDistance = asteroid.size + 2;
-
-            if (distance < minDistance) {
-              // collision happens
-              return true;
-            }
-          }
-
           let distance = p5.Vector.dist(newPosition, p.createVector(0, 0, 0));
           let minDistance = sunRadius + 2;
 
@@ -441,34 +769,149 @@ const P5Sketch = () => {
             return true;
           }
           return false;
-        };
+        }
+        function focusOnPlanetByName(planetName) {
+          if (planetName === 'Sun') {
+            usingPlanetCamera = true;
+            planetCamera.setPosition(0, 0, 5 + sunRadius * 3);
+            planetCamera.lookAt(0, 0, 0);
+          }
+          else {
+            if (planetName === 'Mercury') {
+              planetIndex = 1;
+            }
+            else if (planetName === 'Venus') {
+              planetIndex = 2;
+            }
+            else if (planetName === 'Earth') {
+              planetIndex = 3;
+            }
+            else if (planetName === 'Mars') {
+              planetIndex = 4;
+            }
+            else if (planetName === 'Jupiter') {
+              planetIndex = 5;
+            }
+            else if (planetName === 'Saturn') {
+              planetIndex = 6;
+            }
+            else if (planetName === 'Uranus') {
+              planetIndex = 7;
+            }
+            else if (planetName === 'Neptune') {
+              planetIndex = 8;
+            }
+            else {
+              usingPlanetCamera = false;
+              planetIndex = -1;
+            }
+            if (planetIndex !== -1) {
+              setFlyingMode((prev) => !prev);
+              usingPlanetCamera = true;
+              let planet = planets[planetIndex - 1];
+              planetCamera.setPosition(planet.x, planet.y, planet.z + 5 + planet.size * 3);
+              planetCamera.lookAt(planet.x, planet.y, planet.z);
+            }
+          }
+        }
       };
 
-      const p5Instance = new p5((p) => sketch(p, orbitVisibleRef), sketchRef.current);
+      const p5Instance = new p5((p) => sketch(p, orbitVisibleRef, selectedPlanetRef, flyingModeRef), sketchRef.current);
       return () => {
         p5Instance.remove();
       };
     }
-
-    return () => { };
   }, [fPlanets, fAster]);
 
   return (
     <div>
       <div ref={sketchRef} style={{ position: 'relative' }}>
-        <p>Min Size: </p>
-        <input
-          type="number"
-          id="min_size_input"
-          placeholder="0"
-          defaultValue={minSize}
-          onKeyDown={handleMinSizeChange}
-        />
+        <div
+          className="absolute top-5 left-1/2 transform -translate-x-1/2 "
+          style={{
+            fontSize: 12,
+            borderRadius: 10,
+            background: 'white',
+            opacity: 0.3,
+            padding: 8,
+          }}
+        >
+          <div
+            style={{
+              display: 'flex',
+              alignContent: 'center',
+              color: 'black'
+            }}
+          >
+            <p
+              className="font-bold hover:bg-gray-700 shadow-lg"
+              style={{ marginRight: '10px' }}
+            >
+              Min Size
+            </p>
+            <input
+              type="number"
+              id="min_size_input"
+              placeholder="0"
+              defaultValue={minSize}
+              onKeyDown={handleMinSizeChange}
+              style={{ width: '90px', paddingLeft: '3px' }}
+            />
+          </div>
+
+          <div
+            style={{
+              display: 'flex',
+              alignContent: 'center',
+              color: 'black',
+            }}>
+            <p
+              className="font-bold hover:bg-gray-700 shadow-lg"
+              style={{ marginRight: '10px' }}
+            >
+              Asteroid
+            </p>
+            <input
+              type="checkbox"
+              checked={showAst}
+              onChange={() => {
+                setShowAst(!showAst);
+              }}
+            />
+          </div>
+        </div>
+
+
+
         <button
           onClick={() => setOrbitVisible((prev) => !prev)}
-          className="absolute bottom-5 left-1/2 transform -translate-x-1/2 px-6 py-3 text-lg font-bold text-white bg-gray-600 hover:bg-gray-700 rounded-full shadow-lg"
+          className="absolute bottom-5 left-1/4 transform -translate-x-1/2 px-6 py-3 text-lg font-bold text-white bg-gray-600 hover:bg-gray-700 rounded-full shadow-lg"
         >
           {orbitVisible ? 'Hide Orbits' : 'Show Orbits'}
+        </button>
+        <div >
+          <select
+            value={selectedPlanet}
+            onChange={(e) => setSelectedPlanet(e.target.value)}
+            className="absolute bottom-5 left-3/4 transform -translate-x-1/2 px-6 py-3 text-lg font-bold text-white bg-gray-600 hover:bg-gray-700 rounded-full shadow-lg"
+          >
+            <option value="reset">Choose</option>
+            <option value="Sun">Sun</option>
+            <option value="Mercury">Mercury</option>
+            <option value="Venus">Venus</option>
+            <option value="Earth">Earth</option>
+            <option value="Mars">Mars</option>
+            <option value="Jupiter">Jupiter</option>
+            <option value="Saturn">Saturn</option>
+            <option value="Uranus">Uranus</option>
+            <option value="Neptune">Neptune</option>
+          </select>
+        </div>
+        <button
+          onClick={() => { setSelectedPlanet('reset'); setFlyingMode((prev) => !prev); }}
+          className="absolute bottom-5 left-1/2 transform -translate-x-1/2 px-6 py-3 text-lg font-bold text-white bg-gray-600 hover:bg-gray-700 rounded-full shadow-lg"
+        >
+          {flyingMode ? 'Flying' : 'Return to flying mode'}
         </button>
 
       </div>
