@@ -203,19 +203,8 @@ const P5Sketch = () => {
           sunTex = p.loadImage('/texture/8k_sun.jpg');
           saturnRingTex = p.loadImage('/texture/2k_saturnRing.png');
 
-          let planetTexturePaths = [
-            '/texture/2k_mercury.jpg',
-            '/texture/2k_venus_surface.jpg',
-            '/texture/8k_earth_daymap.jpg',
-            '/texture/2k_mars.jpg',
-            '/texture/2k_jupiter.jpg',
-            '/texture/2k_saturn.jpg',
-            '/texture/2k_uranus.jpg',
-            '/texture/2k_neptune.jpg',
-          ];
-
-          planetTexturePaths.forEach((path) => {
-            planetTex.push(p.loadImage(path));
+          fPlanets.forEach((planet) => {
+            planetTex.push(p.loadImage(planet.tex));
           });
         };
 
@@ -223,7 +212,6 @@ const P5Sketch = () => {
           for (let i = 0; i < fPlanets.length; i++) {
             planets.push(
               new Planet(
-                p,
                 fPlanets[i].full_name,
                 fPlanets[i].a,
                 fPlanets[i].e,
@@ -232,9 +220,9 @@ const P5Sketch = () => {
                 fPlanets[i].longPeri,
                 fPlanets[i].longNode,
                 fPlanets[i].size,
-                planetTex[i],
                 fPlanets[i].axialTilt,
                 fPlanets[i].rotPeriod,
+                planetTex[i],
               )
             );
           }
@@ -242,7 +230,6 @@ const P5Sketch = () => {
           for (let i = 0; i < fAster.length; i++) {
             asteroids.push(
               new Planet(
-                p,
                 fAster[i].full_name,
                 fAster[i].a,
                 fAster[i].e,
@@ -250,10 +237,10 @@ const P5Sketch = () => {
                 fAster[i].L,
                 fAster[i].longPeri,
                 fAster[i].longNode,
-                fAster[i].size,
-                sunTex,
+                fAster[i].size || 6000,
                 1,
                 1,
+                planetTex[0],
               )
             );
           }
@@ -297,21 +284,21 @@ const P5Sketch = () => {
           p.sphere(sunRadius, 128, 128);
           p.pop();
 
-          for (let planet of planets) {
-            planet.drawOrbit();
-            planet.evolution(time);
-            planet.show();
-            if (planet.name === 'Saturn') {
-              planet.showSaturnRing();
+          for (let i = 0; i < planets.length; i++) {
+            planets[i].drawOrbit();
+            planets[i].evolution(time);
+            planets[i].show();
+            if (planets[i].name === 'Saturn') {
+              planets[i].showSaturnRing();
             }
           }
 
-          for (let asteroid of asteroids) {
-            asteroid.drawOrbit();
-            asteroid.evolution(time);
-            asteroid.show();
-          }
-
+          // NOTE: asteroid
+          // for (let asteroid of asteroids) {
+          //   asteroid.drawOrbit();
+          //   asteroid.evolution(time);
+          //   asteroid.show();
+          // }
 
           time += timeSpeed;
         };
@@ -440,14 +427,15 @@ const P5Sketch = () => {
           }
           return false;
         };
+      };
 
-
-        const p5Instance = new p5((p) => sketch(p, orbitVisibleRef), sketchRef.current);
-        return () => {
-          p5Instance.remove();
-        };
+      const p5Instance = new p5((p) => sketch(p, orbitVisibleRef), sketchRef.current);
+      return () => {
+        p5Instance.remove();
       };
     }
+
+    return () => { };
   }, [fPlanets, fAster]);
 
   return (
