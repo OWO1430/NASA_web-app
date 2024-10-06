@@ -11,7 +11,9 @@ generator client {
 
 datasource db {
   provider = "sqlite"
-  url      = "file:./data.sqlite3"
+  // url      = "file:./data.sqlite3"
+  url = env("POSTGRES_PRISMA_URL") // uses connection pooling
+  directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
 }
 
 model Asteroids {
