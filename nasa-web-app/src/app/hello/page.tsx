@@ -9,7 +9,7 @@ const P5Sketch = dynamic(() => import('../../components/P5Sketch'), { ssr: false
 const Page = () => {
   return (
     <div>
-      <h1>Hello</h1>
+      {/* <h1>Hello</h1> */}
       <P5Sketch />
     </div>
   );

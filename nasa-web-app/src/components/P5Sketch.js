@@ -804,14 +804,16 @@ const P5Sketch = () => {
   return (
     <div>
       <div ref={sketchRef} style={{ position: 'relative' }}>
-        <p>Min Size: </p>
-        <input
-          type="number"
-          id="min_size_input"
-          placeholder="0"
-          defaultValue={minSize}
-          onKeyDown={handleMinSizeChange}
-        />
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <p>Min Size: </p>
+          <input
+            type="number"
+            id="min_size_input"
+            placeholder="0"
+            defaultValue={minSize}
+            onKeyDown={handleMinSizeChange}
+          />
+        </div>
         <button
           onClick={() => setOrbitVisible((prev) => !prev)}
           className="absolute bottom-5 left-1/4 transform -translate-x-1/2 px-6 py-3 text-lg font-bold text-white bg-gray-600 hover:bg-gray-700 rounded-full shadow-lg"
