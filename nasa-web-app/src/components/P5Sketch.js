@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react';
 import p5 from 'p5';
 // import 'p5/lib/addons/p5.dom';
 
-
 const sunRadius = 696340 * 10 ** -5;
 const sunRS = 0.001;
 
